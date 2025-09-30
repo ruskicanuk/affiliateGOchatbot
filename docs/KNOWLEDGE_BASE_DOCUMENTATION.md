@@ -4,28 +4,59 @@
 
 This document outlines the knowledge base system that handles user-initiated questions when they select "Let me ask a question" during the bot-driven flow. The system provides accurate, concise responses and seamlessly returns users to the conversation flow.
 
-## Knowledge Base Architecture
+## POC Implementation Note
 
-### Response Format
-All knowledge base responses follow this template:
-```
-[Direct answer to question]
-[Additional relevant details if helpful]
-"Thanks for the question! Now, to help tailor this better, [resume with next question]."
+**For the initial 2-week POC:**
+- Knowledge base stored as static TypeScript file (not database)
+- Simple keyword matching for search
+- Basic categories: Pricing, Location, Amenities, Booking
+- LLM integration for response generation when exact matches not found
+
+## Knowledge Base Architecture (Simplified)
+
+### Static Knowledge Base Structure
+```typescript
+// src/lib/knowledge-static.ts
+export const KNOWLEDGE_BASE = {
+  "pricing": {
+    keywords: ["price", "cost", "pricing", "budget"],
+    response: "Packages start at $800 per person for 3-day retreats..."
+  },
+  "location": {
+    keywords: ["location", "where", "address"],
+    response: "Located in tropical Southeast Asia with Bali-inspired architecture..."
+  },
+  "amenities": {
+    keywords: ["amenities", "facilities", "features"],
+    response: "Private villas with integrated office spaces, high-speed internet..."
+  },
+  "booking": {
+    keywords: ["book", "reserve", "availability"],
+    response: "To check availability and book your retreat..."
+  }
+};
+
+export function searchKnowledge(query: string) {
+  const lowercaseQuery = query.toLowerCase();
+
+  for (const [topic, data] of Object.entries(KNOWLEDGE_BASE)) {
+    if (data.keywords.some(keyword => lowercaseQuery.includes(keyword))) {
+      return data.response;
+    }
+  }
+
+  return "I can help with Green Office Villas info—try rephrasing?";
+}
 ```
 
 ### Response Guidelines
 - **Concise**: Keep answers under 200 words
 - **Factual**: Provide accurate, up-to-date information
-- **Contextual**: Include relevant details that add value
 - **Flow-Resuming**: Always end with transition back to conversation flow
 
 ### Fallback Response
-For unmatched or unclear questions:
-"I can help with Green Office Villas info—try rephrasing?"
-
-For questions requiring detailed information not in knowledge base:
-"That's a great question! For more detailed information, check www.greenofficevillas.com/faq."
+For unmatched questions, use LLM with context:
+"Let me help you with that. [LLM-generated response based on available knowledge]"
 
 ## Knowledge Categories
 

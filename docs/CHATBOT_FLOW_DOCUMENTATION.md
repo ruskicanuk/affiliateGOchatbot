@@ -4,6 +4,14 @@
 
 This document details the complete conversation flow when the chatbot is "driving" the interaction. The flow consists of 35+ questions (Q1-Q35) organized in a decision-tree structure designed to qualify leads and gather comprehensive retreat requirements.
 
+## POC Implementation Note
+
+**For the initial 2-week POC, implement in phases:**
+- **Week 1**: Q1-Q10 (core qualification questions)
+- **Week 2**: Q11-Q35 (complete flow)
+
+The full flow documentation below represents the complete vision, but can be implemented incrementally.
+
 ## Initial Greeting
 
 **Bot Message:**
