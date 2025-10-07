@@ -1,6 +1,6 @@
 // Core chatbot logic in single file for POC
 import { Question } from '@/types';
-import { searchKnowledge } from './knowledge-static';
+
 
 // Week 1: Q1-Q10 implementation (core qualification questions)
 export const QUESTIONS: Record<string, Question> = {
@@ -10,15 +10,11 @@ export const QUESTIONS: Record<string, Question> = {
     type: 'multiple_choice',
     options: [
       "My clients are companies that engage me (or my company) to help them organize retreats (e.g., retreat planner/agency)",
-      "We are not retreat planners by profession but are in the midst of organizing a team retreat (e.g., internal team lead)",
-      "Something else (please describe briefly)",
-      "Let me ask a question"
+      "We are not retreat planners by profession but are in the midst of organizing a team retreat (e.g., internal team lead)"
     ],
     next: (answer: number) => {
       if (answer === 0) return 'Q2';
       if (answer === 1) return 'Q3';
-      if (answer === 2) return 'Q12'; // Will implement in Week 2
-      if (answer === 3) return 'KNOWLEDGE_BASE';
       return 'Q1';
     }
   },
@@ -30,14 +26,12 @@ export const QUESTIONS: Record<string, Question> = {
     options: [
       "I am planning a retreat for a client—curious if Green Office is a fit",
       "Scouting venues for our platform/portfolio",
-      "Interested in partnerships (e.g., affiliates)",
-      "Let me ask a question"
+      "Interested in partnerships (e.g., affiliates)"
     ],
     next: (answer: number) => {
       if (answer === 0) return 'Q2_1';
-      if (answer === 1) return 'Q2_2'; // Will implement in Week 2
-      if (answer === 2) return 'Q2_3'; // Will implement in Week 2
-      if (answer === 3) return 'KNOWLEDGE_BASE';
+      if (answer === 1) return 'Q2_2';
+      if (answer === 2) return 'Q2_3';
       return 'Q2';
     }
   },
@@ -74,15 +68,13 @@ export const QUESTIONS: Record<string, Question> = {
       "Team-building",
       "Work-focused",
       "Both",
-      "Relaxation",
-      "Let me ask a question"
+      "Relaxation"
     ],
     next: (answer: number) => {
       if (answer === 0) return 'Q5';
       if (answer === 1) return 'Q6';
       if (answer === 2) return 'Q5'; // Both - start with team building
       if (answer === 3) return 'Q7';
-      if (answer === 4) return 'KNOWLEDGE_BASE';
       return 'Q4';
     }
   },
@@ -95,11 +87,9 @@ export const QUESTIONS: Record<string, Question> = {
       "Outdoor adventures",
       "Creative workshops",
       "Cultural experiences",
-      "Wellness activities",
-      "Let me ask a question"
+      "Wellness activities"
     ],
     next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
       return 'Q8'; // Continue to timeline question
     }
   },
@@ -615,13 +605,7 @@ export class SimpleChatbot {
     // Store the response
     this.userResponses[question.id] = answer;
 
-    // Handle knowledge base requests
-    if (question.type === 'multiple_choice' && question.options) {
-      const selectedOption = question.options[answer];
-      if (selectedOption === "Let me ask a question") {
-        return { nextQuestion: 'KNOWLEDGE_BASE' };
-      }
-    }
+    // Knowledge base requests are now handled via custom question input
 
     // Get next question
     const nextQuestionId = question.next(answer);
@@ -652,10 +636,7 @@ export class SimpleChatbot {
     return { nextQuestion: nextQuestionId };
   }
 
-  handleKnowledgeQuery(query: string): string {
-    const response = searchKnowledge(query);
-    return `${response}\n\nThanks for the question! Now, to help tailor this better, let's continue where we left off.`;
-  }
+
 
   calculateQualificationScore(): number {
     let score = 0;

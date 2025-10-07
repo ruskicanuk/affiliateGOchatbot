@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardHeader, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import { ChatSession } from '@/types';
@@ -46,9 +47,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ sessions }) => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Green Office Villas Chatbot Analytics</p>
+        <div className="flex items-center gap-4">
+          <Image
+            src="/images/goLogo.png"
+            alt="Green Office Logo"
+            width={48}
+            height={48}
+            className="rounded-lg"
+          />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <p className="text-gray-600">Green Office Villas Chatbot Analytics</p>
+          </div>
         </div>
         {sessionsWithEmail.length > 0 && (
           <Button onClick={exportLeads} variant="outline">

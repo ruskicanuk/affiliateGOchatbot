@@ -4,18 +4,37 @@
 
 This document details the complete conversation flow when the chatbot is "driving" the interaction. The flow consists of 35+ questions (Q1-Q35) organized in a decision-tree structure designed to qualify leads and gather comprehensive retreat requirements.
 
-## POC Implementation Note
 
-**For the initial 2-week POC, implement in phases:**
-- **Week 1**: Q1-Q10 (core qualification questions)
-- **Week 2**: Q11-Q35 (complete flow)
 
-The full flow documentation below represents the complete vision, but can be implemented incrementally.
+## Interface Design Changes (Updated)
+
+### New Chat Interface
+The chatbot now uses a **single chat window design** with the following features:
+
+1. **In-Chat Interactive Buttons**: All multiple choice questions appear as clickable buttons within bot messages
+2. **Selected Option Highlighting**: When a user clicks an option, it appears as a green highlighted user message
+3. **Persistent Custom Question Input**: Always-available input field at the bottom for custom questions
+4. **Smooth Animations**: All interactions include smooth transitions and visual feedback
+
+### Hybrid Response Handling
+**Important:** Users can interact with the chatbot in two ways at any point in the conversation:
+
+1. **Clickable Options**: Click on provided multiple choice buttons to follow the guided conversation flow
+2. **Custom Questions**: Type any question in the persistent input field at the bottom
+
+**How Hybrid Responses Work:**
+- When a user asks a custom question, the bot responds with context awareness of the entire conversation history
+- After answering the custom question, the bot continues by re-presenting the current question's clickable options
+- The conversation flow position is maintained - custom questions don't advance or interrupt the guided flow
+- Users can seamlessly switch between clicking options and asking custom questions
+
+### Updated Question Format
+All questions in this documentation that previously included "Let me ask a question" or "Something else" options should be read as having those options removed. The custom question functionality is now always available through the bottom input field.
 
 ## Initial Greeting
 
 **Bot Message:**
-"Welcome! I'm here to help you explore Green Office Villas, a premium eco-friendly venue for productive team retreats featuring private villas with office spaces, high-speed internet, and amenities to strengthen team culture. Let's see if it's a fit—what best describes your role?"
+"Welcome! I'll help you explore whether Green Office is a fit by asking you a series of questions.  You can always ask a change the topic by asking a custom question (at the bottom of the chat window).  What best describes your role?"
 
 ## Primary Flow Structure
 
@@ -25,8 +44,8 @@ The full flow documentation below represents the complete vision, but can be imp
 **Options:**
 - Option 1: My clients are companies that engage me (or my company) to help them organize retreats (e.g., retreat planner/agency) → **Go to Q2**
 - Option 2: We are not retreat planners by profession but are in the midst of organizing a team retreat (e.g., internal team lead) → **Go to Q3**
-- Option 3: Something else (please describe briefly) → **Go to Q12**
-- Option 4: Let me ask a question → **Knowledge Base Mode**
+
+**Note:** Users can ask custom questions anytime using the persistent input field at the bottom of the chat, or click one of the provided options to continue the guided flow.
 
 ---
 
@@ -39,7 +58,6 @@ The full flow documentation below represents the complete vision, but can be imp
 - Option 1: I am planning a retreat for a client—curious if Green Office is a fit → **Go to Q2.1**
 - Option 2: Scouting venues for our platform/portfolio → **Go to Q2.2**
 - Option 3: Interested in partnerships (e.g., affiliates) → **Go to Q2.3**
-- Option 4: Let me ask a question → **Knowledge Base Mode**
 
 ### Q2.1: Client Retreat Planning
 **Question:** "Let's dive into your client's retreat. How many attendees?"
@@ -338,10 +356,11 @@ The full flow documentation below represents the complete vision, but can be imp
 
 ## Flow Management Rules
 
-### Interruption Handling
-- At any "Let me ask a question" option → Switch to Knowledge Base Mode
-- After knowledge base response → Resume with next relevant question
-- Maintain flow state throughout interruptions
+### Custom Question Handling
+- Users can ask custom questions anytime via the persistent input field at bottom
+- Custom questions are handled via OpenAI integration with static knowledge base fallback
+- After custom question response → Main conversation flow continues uninterrupted
+- No need to switch modes - custom questions are seamlessly integrated
 
 ### Adaptive Flow
 - Skip irrelevant questions based on previous answers
