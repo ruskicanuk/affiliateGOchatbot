@@ -4,19 +4,17 @@
 
 This document details the complete conversation flow when the chatbot is "driving" the interaction. The flow consists of 35+ questions (Q1-Q35) organized in a decision-tree structure designed to qualify leads and gather comprehensive retreat requirements.
 
-
-
-## Interface Design Changes (Updated)
-
-### New Chat Interface
-The chatbot now uses a **single chat window design** with the following features:
+### Chat Interface
+The chatbot uses a **single chat window design** with the following features:
 
 1. **In-Chat Interactive Buttons**: All multiple choice questions appear as clickable buttons within bot messages
 2. **Selected Option Highlighting**: When a user clicks an option, it appears as a green highlighted user message
 3. **Persistent Custom Question Input**: Always-available input field at the bottom for custom questions
 4. **Smooth Animations**: All interactions include smooth transitions and visual feedback
+5. **Form Link**: Below the single chat window, a link to another page which says "I prefer to learn more about Green Office from a human".  The page is a form that asks for their first (required) and last (required) name, their email (required), their phone number (optional), Retreats per year (Integer, optional) and Attendees per retreat (Integer, optional).
 
 ### Hybrid Response Handling
+
 **Important:** Users can interact with the chatbot in two ways at any point in the conversation:
 
 1. **Clickable Options**: Click on provided multiple choice buttons to follow the guided conversation flow
@@ -28,15 +26,12 @@ The chatbot now uses a **single chat window design** with the following features
 - The conversation flow position is maintained - custom questions don't advance or interrupt the guided flow
 - Users can seamlessly switch between clicking options and asking custom questions
 
-### Updated Question Format
-All questions in this documentation that previously included "Let me ask a question" or "Something else" options should be read as having those options removed. The custom question functionality is now always available through the bottom input field.
-
 ## Initial Greeting
 
 **Bot Message:**
-"Welcome! I'll help you explore whether Green Office is a fit by asking you a series of questions.  You can always ask a change the topic by asking a custom question (at the bottom of the chat window).  What best describes your role?"
+"Welcome! I'll ask a series of questions to help you explore whether Green Office is a fit.  At any time, you may pause this series of questions by asking any question on your mind (entering it at the bottom of this chat window)"
 
-## Primary Flow Structure
+## Question Flow Structure
 
 ### Q1: Role Identification (Entry Point)
 **Question:** "What best describes your role?"
@@ -52,42 +47,38 @@ All questions in this documentation that previously included "Let me ask a quest
 ## Branch A: Retreat Planner Path (Q1 → Q2)
 
 ### Q2: Planner Interest Type
-**Question:** "We may be a great fit! Green Office Villas is built to help planners offer clients tailor-made retreats. What best describes your interest?"
+**Question:** "We may be a great fit! Green Office is purpose-built to help retreat planners/platforms offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?"
 
 **Options:**
-- Option 1: I am planning a retreat for a client—curious if Green Office is a fit → **Go to Q2.1**
-- Option 2: Scouting venues for our platform/portfolio → **Go to Q2.2**
-- Option 3: Interested in partnerships (e.g., affiliates) → **Go to Q2.3**
+- Option 1: I am planning an upcoming retreat for a client — curious if Green Office is a fit → **Go to Q2.1**
+- Option 2: Scouting potential venues for our platform or portfolio → **Go to Q2.2**
 
 ### Q2.1: Client Retreat Planning
-**Question:** "Let's dive into your client's retreat. How many attendees?"
+**Question:** "Perfect, let's sketch out the retreat plan. How many attendees?"
 **Input Type:** Integer
 
 **Validation & Responses:**
-- Invalid input: "Oops, typo—how many attendees?"
+- Invalid input: "Oops, typo — how many attendees?"
 - 1-50: "Perfect fit for our villas." → **Continue to Q4**
 - 51-400: "Expanding by 2027-2028; email for updates?" → **Lead Capture**
 - >400: "Too large; options for subgroups? Email?" → **Lead Capture**
-- Alternate: Let me ask a question → **Knowledge Base Mode**
 
 ### Q2.2: Venue Scouting
-**Question:** "What venue types are you prioritizing?"
+**Question:** "Interesting, Green Office might really help differentiate your platform offering.  I feel we should escalate your interest to a meeting with our team to explore partnership models.  How many retreats are organized through your platform per year?"
 
 **Options:**
-- Option 1: Eco-friendly
-- Option 2: Work-focused
-- Option 3: Luxury tropical
-- Option 4: All
-- Option 5: Let me ask a question → **Knowledge Base Mode**
+- Option 1: Fewer than 10
+- Option 2: 10 to 100
+- Option 3: 100 to 1,000
+- Option 4: 1,000+
 
-### Q2.2.1: Group Size for Scouting
-**Question:** "We match that. Typical client group size? (e.g., 10-50)"
-**Branch to:** Size handling like Q2.1
-
-### Q2.3: Partnership Interest
-**Question:** "What partnership type?"
-**Input Type:** Open text
-**Follow-up:** "Promising—email for discussion?" → **Lead Capture**
+### Q2.2.1: The Platform's Retreat Planning Role
+**Question:** "What is your invovlement in managing the retreats initiated on your platform?"
+**Options:**
+- Option 1: Negligible, we are purely a platform used by 3rd party planners and corporate clients to identify potential retreat venues
+- Option 2: Limited, most of our clients manage the retreat themselves (via a retreat planner or themselves) though some engage us on aspects of the the retreat planning
+- Option 3: Moderate, we manage a mix of retreat planning services depending on the client
+- Option 4: Active, most of our clients use us to fully manage the retreat end to end
 
 ---
 
@@ -122,7 +113,6 @@ All questions in this documentation that previously included "Let me ask a quest
 - Option 2: Creative (art/cooking)
 - Option 3: Wellness (yoga)
 - Option 4: Open to suggestions
-- Option 5: Let me ask a question → **Knowledge Base Mode**
 
 ### Q6: Work Requirements
 **Question:** "Key work needs?"
