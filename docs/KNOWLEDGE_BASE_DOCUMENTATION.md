@@ -45,7 +45,7 @@ export function searchKnowledge(query: string) {
     }
   }
 
-  return "I can help with Green Office Villas info—try rephrasing?";
+  return "I can help with Green Office info—try rephrasing?";
 }
 ```
 
@@ -63,53 +63,43 @@ For unmatched questions, use LLM with context:
 ### 1. About Green Office Villas
 
 #### Location & Setting
-**Keywords:** location, where, address, tropical, Bali, Southeast Asia
+**Keywords:** location, where, address, tropical, Caribbean, Dominican Republic
 **Content:**
-Green Office Villas is located in a tropical paradise with Bali-inspired architecture in Southeast Asia. The eco-resort setting provides a serene environment perfect for productive team retreats while maintaining connectivity to modern amenities.
+Green Office is located in a tropical paradise with Caribbean-inspired architecture in the Dominican Republic. The work-oriented resort setting provides a serene environment perfect for productive team retreats while maintaining connectivity to modern amenities.
 
 #### Facility Overview
 **Keywords:** facilities, villas, offices, spaces, accommodation
 **Content:**
-We feature private villas with integrated office spaces, combining luxury accommodation with professional work environments. Each villa includes ergonomic furniture, dedicated work areas, and seamless indoor-outdoor flow for balanced productivity and relaxation.
+We feature private villas with integrated office spaces, combining luxury accommodation with professional work environments. Each villa includes ergonomic furniture, dedicated work areas, and seamless indoor-outdoor flow for balanced productivity, inspiration and relaxation.
 
 #### Capacity & Expansion
 **Keywords:** capacity, size, how many, attendees, guests, expansion
 **Content:**
-Current capacity accommodates up to 50 guests in Phase 1. We're expanding to serve up to 400 guests by 2027-2028. For groups of 51-400, we maintain a waitlist and provide updates on availability.
+Current capacity accommodates up to 50 guests in Phase 1. We're expanding to serve up 300+ guests by 2027-2028. For groups of 51-300+, we maintain a waitlist and provide updates on availability.
 
 #### Internet & Connectivity
 **Keywords:** internet, wifi, speed, bandwidth, connectivity, tech
 **Content:**
-High-speed fiber internet with 500Mbps+ ensures reliable connectivity for video conferencing, file sharing, and remote work needs. Multiple access points throughout the property guarantee strong signal in all areas.
+High-speed, reliable internet ensures reliable connectivity for video conferencing, file sharing, and remote work needs. Multiple access points throughout the property guarantee strong signal in all areas.
 
 ### 2. Pricing & Packages
 
 #### Base Pricing
 **Keywords:** price, cost, pricing, packages, rates, budget
 **Content:**
-Packages start at $800 per person for 3-day retreats, including villa accommodation, meals, and basic activities. All pricing is customizable based on group size, duration, and specific requirements.
-
-#### Add-On Services
-**Keywords:** add-ons, extras, wellness, upgrades, additional
-**Content:**
-Available add-ons include wellness sessions ($200/person), tech upgrades ($100/person), and custom facilitation services. We offer flexible packages to match your specific retreat goals and budget.
+Packages start under $500 (daily) per person including accommodation, meals, airport pickup and amentities. Pricing varies based on degree of accomodation privacy (eg. shared rooms, shared villas or private villas), season and length of stay (longer stays pay less per day)
 
 #### Affiliate & Planner Benefits
 **Keywords:** affiliate, commission, planner, discount, referral
 **Content:**
-Retreat planners and affiliates earn 10-15% commission on successful bookings. We also offer 10% discounts for qualified planners to help you provide competitive pricing to your clients.
-
-#### Custom Quotes
-**Keywords:** quote, estimate, personalized, custom pricing
-**Content:**
-Exact pricing depends on group size, duration, season, and selected services. Contact us via email for personalized quotes tailored to your specific retreat requirements.
+Retreat planners and affiliates earn a commission on successful bookings. We also offer discounts for qualified planners to help you provide competitive pricing to your clients.
 
 ### 3. Amenities & Features
 
 #### Office Amenities
 **Keywords:** office, workspace, meeting, conference, projector, whiteboard
 **Content:**
-Office spaces include ergonomic desks and chairs, whiteboards, projectors, video conferencing equipment, and charging stations. Conference rooms accommodate various group sizes for meetings and presentations.
+Office spaces include ergonomic desks and chairs, docking stations connected to 2 monitors, whiteboards, projectors and video conferencing equipment. Conference rooms accommodate various group sizes for meetings and presentations.
 
 #### Relaxation Facilities
 **Keywords:** pool, yoga, relaxation, wellness, spa, outdoor
@@ -180,12 +170,12 @@ Located in a tropical climate region with year-round warm weather. The setting p
 #### Airport & Transportation
 **Keywords:** airport, shuttle, transportation, travel, getting there
 **Content:**
-Nearest airport is approximately 1-hour shuttle ride away. Group shuttles available for $50 per person. Individual transportation and rental car options also available.
+Nearest airport (Puerto Plata, POP) is approximately 50 minutes shuttle ride away.  Santiago (STI) is about 1.5 hours away.  Green Office offers free shuttle service to/from Puerto Plata and Santiago.  Other airport options include Santo Domingo (SDQ) which is 3.5 hours away and Punta Cana (PUJ) which is 5.5 hours away.  Rental car options are also available.
 
 #### Visa Requirements
 **Keywords:** visa, passport, requirements, travel documents
 **Content:**
-Visa requirements vary by nationality. Check with your country's embassy for specific requirements. We can provide invitation letters for visa applications if needed.
+USA, Canada and Europe generally do not require a Visa.  For other countries, check with your country's embassy for specific requirements. We can provide invitation letters for visa applications if needed.
 
 ### 7. Activities & Experiences
 
@@ -214,7 +204,7 @@ Professional facilitators available for leadership development, team dynamics, a
 #### Partnership Opportunities
 **Keywords:** partnership, affiliate, collaboration, business
 **Content:**
-Partnership opportunities include affiliate programs, venue partnerships, and collaborative marketing. Contact partnerships@greenofficevillas.com for detailed discussions.
+Partnership opportunities include affiliate programs, venue partnerships, and collaborative marketing. Contact admin@greenofficevillas.com for detailed discussions.
 
 #### Referral Programs
 **Keywords:** referral, recommend, program, benefits, rewards

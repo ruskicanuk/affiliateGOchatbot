@@ -37,312 +37,292 @@ The chatbot uses a **single chat window design** with the following features:
 **Question:** "What best describes your role?"
 
 **Options:**
-- Option 1: My clients are companies that engage me (or my company) to help them organize retreats (e.g., retreat planner/agency) → **Go to Q2**
-- Option 2: We are not retreat planners by profession but are in the midst of organizing a team retreat (e.g., internal team lead) → **Go to Q3**
+- Option 1: Our clients engage me (or my company) to help facilitate retreats in some manner (e.g., planner/platform/consultants) → **Go to Q2**
+- Option 2: We are looking at options for an upcoming team retreat (eg. I am a team leader, team assistant, etc) → **Go to Q3**
 
 **Note:** Users can ask custom questions anytime using the persistent input field at the bottom of the chat, or click one of the provided options to continue the guided flow.
 
 ---
 
-## Branch A: Retreat Planner Path (Q1 → Q2)
+## Branch A: Planner Path (Q1 → Q2)
 
 ### Q2: Planner Interest Type
-**Question:** "We may be a great fit! Green Office is purpose-built to help retreat planners/platforms offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?"
+**Question:** "We may be a great fit! Green Office is purpose-built to help retreat planners/platforms/consultants offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?"
 
 **Options:**
 - Option 1: I am planning an upcoming retreat for a client — curious if Green Office is a fit → **Go to Q2.1**
-- Option 2: Scouting potential venues for our platform or portfolio → **Go to Q2.2**
+- Option 2: Exploring potential venues for our platform or portfolio → **Go to Q2.2.1**
 
 ### Q2.1: Client Retreat Planning
-**Question:** "Perfect, let's sketch out the retreat plan. How many attendees?"
-**Input Type:** Integer
+**Question:** "Perfect, let's sketch out the retreat plan"
+**Path:** Skip to Q3 and follow the flow from there
+
+### Q2.2.1: Venue Scouting
+**Question:** "Interesting, Green Office might help differentiate your platform verus the competition.  I feel we may want to escalate your interest to a meeting with our leadership team to explore partnership models.  How many retreats are organized by your company or through your platform per year?"
+
+**Options:**
+- Option 1: Fewer than 10 **Go to Q2.2.2**
+- Option 2: 10 to 100 **Go to Q2.2.2**
+- Option 3: 100 to 1,000 **Go to Q2.2.2**
+- Option 4: 1,000+ **Go to Q2.2.2**
+
+### Q2.2.2: Typical Retreat Size
+**Question:** "What best describes the scale of average retreat organized by your company or through your platform?"
+
+**Options:**
+- Option 1: Consistently small (less than 20 per retreat on average) with little variation
+- Option 2: Small (less than 20 per retreat on average) but ranges widely
+- Option 3: Consistently moderate (20-50 per retreat on average) with little variation
+- Option 4: Moderate (20-50 per retreat on average) but ranges widely
+- Option 5: Consistently large (over 50 per retreat on average) with little variation
+- Option 6: Large (over 50 per retreat on average) but ranges widely
 
 **Validation & Responses:**
-- Invalid input: "Oops, typo — how many attendees?"
-- 1-50: "Perfect fit for our villas." → **Continue to Q4**
-- 51-400: "Expanding by 2027-2028; email for updates?" → **Lead Capture**
-- >400: "Too large; options for subgroups? Email?" → **Lead Capture**
+- Option 1-4: "Green Office is purpose-built for retreats of that scale." → **Continue to Q2.2.3**
+- Option 5: "We are expanding capacity to serve companies of your scale in 2027-2028; I can keep you updated if you provide me your email" → **Planner Lead Capture**
+- Option 6: "We are expanding capacity to serve companies of your scale in 2027-2028;  However, since you said your retreat size is wide-ranging, I'll bet we can accomodate some of the smaller retreats.  Our current capacity is 50 attenddees though we are planning to expand to 300+ in 2027-2028" → **Continue to Q2.2.3**
 
-### Q2.2: Venue Scouting
-**Question:** "Interesting, Green Office might really help differentiate your platform offering.  I feel we should escalate your interest to a meeting with our team to explore partnership models.  How many retreats are organized through your platform per year?"
-
+### Q2.2.3: The Platform's Retreat Planning Role
+**Question:** "What is your involvement in organizing the retreats initiated on your platform?"
 **Options:**
-- Option 1: Fewer than 10
-- Option 2: 10 to 100
-- Option 3: 100 to 1,000
-- Option 4: 1,000+
+- Option 1: Negligible, we are purely a platform used by 3rd party planners and corporate clients to identify potential retreat venues **Go to Planner Prospect Capture**
+- Option 2: Limited, most of our clients manage the retreat themselves (via a retreat planner or themselves) though some engage us on aspects of the the retreat planning **Go to Planner Prospect Capture**
+- Option 3: Moderate, we manage a mix of retreat planning services depending on the client **Go to Planner Prospect Capture**
+- Option 4: Active, most of our clients use us to fully manage the retreat end to end **Go to Planner Prospect Capture**
 
-### Q2.2.1: The Platform's Retreat Planning Role
-**Question:** "What is your invovlement in managing the retreats initiated on your platform?"
+**Planner Lead Capture**
+"Hope this interaction was helpful.  I'll update our team with the summary" -> Jump to **Green Office Update Options**
+
+**Planner Prospect Capture**
+"Hope this interaction was helpful.  Based on our chat, I expect your organization and Green Office should be a good fit.  I suggest we organize a 20m introductory call with our team - does that work?
+If **Yes** -> Jump to **Acquire Contact Information** followed by **Schedule Call with Green Office**
+If **No** -> Jump to **Green Office Update Options** followed by **Acquire Contact Information**
+
+**Acquire Contact Information**
+Ask for their name, company, email and phone.  Chat back and forth until information is acquired.  Present it back for user confirmation.  Once confirmed, move on either to schedule call or end the .
+
+**Schedule Call with Green Office**
+Propose a few dates.  Chat back and forth until a good time is confirmed.  Present it back to the user for confirmation.  Once confirmed, send them and admin@greenofficevillas.com an outlook meeting invite and close the conversation. 
+
+**Green Office Update Options**
+"How do you prefer to stay updated?"
 **Options:**
-- Option 1: Negligible, we are purely a platform used by 3rd party planners and corporate clients to identify potential retreat venues
-- Option 2: Limited, most of our clients manage the retreat themselves (via a retreat planner or themselves) though some engage us on aspects of the the retreat planning
-- Option 3: Moderate, we manage a mix of retreat planning services depending on the client
-- Option 4: Active, most of our clients use us to fully manage the retreat end to end
+-Option 1: Put me in the waitlist queue (first come, first serve)
+-Option 2: contact me by email after a set number of months (ask user for how many months if this option is selected)
+-Option 3: contact me by phone after a set number of months (ask user for how many months if this option is selected)
+-Option 4: Keep me informed of Green Office project updates
+-Option 5: I do not see a fit at this time nor at any time in the future
+
+**Validation & Responses:**
+- Option 1-4: Goto the **Acquire Information** step and in the final confirmation be clear about how the interaction will occur:
+ie. Option 1: Green Office will contact you when we bookings are available and you are at the front of the waitlist
+ie. Option 2: Green Office will contact you in [user selected] months by email
+ie. Option 3: Green Office will contact you in [user selected] months by phone 
+ie. Option 4: Green Office will keep you up to date with project updates
 
 ---
 
-## Branch B: Internal Team Lead Path (Q1 → Q3)
+## Branch B: Actual Retreat Path, Determining Fit (Q1 → Q3)
+
+**Actual Retreat Lead Capture**
+"I'll update our team with the summary of our chat.  The fit today may not be perfect, but I suspect we'll want to stay in touch." -> Jump to **Green Office Update Options**
+
+**Actual Retreat Prospect Capture**
+"Based on our chat, I expect your organization and Green Office should be a good fit.  I suggest we organize a 20m introductory call with our team to get further into your retreat details - does that work?
+If **Yes** -> Jump to **Acquire Contact Information** followed by **Schedule Call with Green Office**
+If **No** -> Jump to **Green Office Update Options** followed by **Acquire Contact Information**
 
 ### Q3: Team Size Validation
-**Question:** "Let's check fit. How many attendees?"
+**Question:** "Great, I have three critical questions to see if Green Office is a possible fit based on the number (estimated or actual) of retreat attendees, the (approximate or actual) retreat date and its estimated duration.  Don't worry about perfect detail accuracy quite yet - let's see if we are in the approximate zone.  How many attendees do you expect?"
 **Input Type:** Integer
-**Validation:** Same as Q2.1
+
+**Validation & Responses:**
+- Attendees between 2 and 50: "Perfect.  Green Office is purpose-built for retreats of that size." → **Continue to Q4**
+- Attendees = 1: "Sounds like quite the introverted retreat!  We do have some individual bookings though retreats are what we are built for" → **Actual Retreat Lead Capture**
+- Attendees > 50: "We are expanding capacity to serve companies of your scale in 2027-2028;  Our current capacity is 50 attenddees.  Unless you can break up the retreat into sub groups, we might be too small to properly accomodate your team" → **Actual Retreat Lead Capture**
+
+### Q4: Date Validation
+**Question:** "What approximate date do you aim to start the retreat on?"
+**Input Type:** Date
+
+**Validation & Responses:**
+- Starting before Nov 1, 2026: "Unfortunately, Green Office won't be open quite yet on that day.  But do not lose heart!  We are aiming to open in December of 2026" → **Actual Retreat Lead Capture**
+- Starting later than Oct 31, 2026:  → **Continue to Q5**
+
+### Q5: Retreat Duration
+**Question:** "Approximately, how many days long do you expect the retreat to run?"
+**Input Type:** Integer
+
+**Validation & Responses:**
+- Any entry between 3 and 120 (inclusive) then respond "Green Office is purpose-built for your team size, we are operational on your start date and the retreat duration fits perfectly" → **Continue to Q6**
+- Any other value: (ask for clarification if response is not an integer or seems like an error) "Unfortunately, Green Office may not be a good fit for that retreat duration.  Probably we should connect to clarify as the duration is a bit unusual for a retreat" → **Actual Retreat Prospect Capture**
 
 ---
 
-## Main Qualification Flow (Q4-Q35)
+## Actual Retreat Path, Details (Q6 - Q25)
 
-### Q4: Retreat Goals
-**Question:** "Primary retreat goals?"
-**Applies to:** Q3/Q2.1 responses (1-50 attendees)
-
+### Q6: Retreat Goals
+**Question:** "Since Green Office is a good fit for your team, we could wrap up this chat with next steps or, if you prefer, I have a longer list of detailed retreat planning questions.  If you have the time, the detailed retreat questions will allow our team to better prepare for our follow up meeting and should make that meeting sail by faster.  The questions may also help you think through the retreat planning details.  Let me know which you prefer:
 **Options:**
-- Option 1: Team-building → **Go to Q5**
-- Option 2: Work-focused → **Go to Q6**
-- Option 3: Both → **Go to Q5 and Q6**
-- Option 4: Relaxation → **Continue to Q7**
-- Option 5: Let me ask a question → **Knowledge Base Mode**
+- Option 1: Let's wrap up this chat with next steps (1-2 minutes) → **Actual Retreat Prospect Capture**
+- Option 2: Let's get into the detailed retreat planning questions (4-5 minutes)  → **Go to Q7**
 
-### Q5: Team-Building Activities
-**Question:** "Specific team-building activities?"
-**Triggered by:** Q4 Options 1 or 3
+### Q7: Retreat Goals
+**Question:** "Great!  Let's get into it - I have 20 questions for you which should take 4 - 5 minutes.  What are Primary retreat goals? (you may select more than 1)"
 
-**Options:**
-- Option 1: Outdoor (hiking/games)
-- Option 2: Creative (art/cooking)
-- Option 3: Wellness (yoga)
-- Option 4: Open to suggestions
+**Options:** (multi-select with a confirm button)
+- Option 1: Team-building → **Include Q8**
+- Option 2: Work-output → **Include Q9**
+- Option 3: Relaxation-celebration → **Include to Q10**
+- Confirm Button: (Saves the selected retreat goals)
 
-### Q6: Work Requirements
-**Question:** "Key work needs?"
-**Triggered by:** Q4 Options 2 or 3
+### Q8: Team-Building Activities (if Option 1 was among the selected retreat goals in Q7)
+**Question:** "Which team-building activities resonate?"
 
-**Options:**
-- Option 1: Meeting rooms
-- Option 2: Tech setup
-- Option 3: Quiet spaces
-- Option 4: All
-- Option 5: Let me ask a question → **Knowledge Base Mode**
+**Options:** (multi-select with a confirm button)
+- Option 1: Thermal Spa
+- Option 2: Challenge Games
+- OPtion 3: Horseback Riding
+- Option 4: Kitesurfing
+- Option 5: Team Games
+- Confirm Button: (Saves the selected)
 
-### Q7: Retreat Duration
-**Question:** "Retreat duration? (Days, integer 1-30)"
-**Input Type:** Integer (1-30)
+### Q9: Work-output Requirements (if Option 2 was among the selected retreat goals in Q7)
+**Question:** "What sort of work output do you hope to achieve?"
 
-**Validation & Responses:**
-- Invalid: "Try again—how many days?"
-- 1-3: "Short-stay packages."
-- 4-7: "Full-week rentals."
-- 8+: "Extended immersions."
-- Alternate: Let me ask a question → **Knowledge Base Mode**
+**Options:** (multi-select with a confirm button)
+- Option 1: Strategic Planning
+- Option 2: Build a Product
+- Option 3: Maintain Normal Work Output while at the Retreat
+- Confirm Button: (Saves the selected)
 
-### Q8: Timeline
-**Question:** "Planned dates/season? (e.g., MM/DD/YYYY or 'fall 2025')"
-**Input Type:** Open text
-**Response:** "Noted [echo]. Availability in [high-level]."
+### Q10: Relaxation-celebration Requirements (if Option 3 was among the selected retreat goals in Q7)
+**Question:** "What relaxation-celebration activities resonate?"
 
-### Q9: Budget Range
-**Question:** "Budget per person?"
+**Options:** (multi-select with a confirm button)
+- Option 1: Thermal Spa
+- Option 2: Running/Walking along the beach
+- OPtion 3: Horseback Riding along the beach
+- Option 4: Kitesurfing
+- Option 5: Pool/Swimming
+- Option 6: Networking/Socializing
+- Option 7: Stargazing
+- Option 8: Sun Tanning
+- Confirm Button: (Saves the selected)
 
-**Options:**
-- Option 1: <$500
-- Option 2: $500-1000
-- Option 3: $1000-2000
-- Option 4: >$2000
-- Option 5: Unsure
-- Option 6: Let me ask a question → **Knowledge Base Mode**
+### Q11: Transportation Preference
+**Question:** "Transportation needs?"
 
-### Q10: Special Requirements
-**Question:** "Special requirements?"
+**Options:** (multi-select with a confirm button)
+- Option 1: Would prefer Green Office manages all transportation to/from the Airport
+- Option 2: Would prefer to manage all transportation to/from the Airport ourselves (eg. car rental, taxi, etc)
+- Confirm Button: (Saves the selected)
 
-**Options:**
-- Option 1: Dietary
-- Option 2: Accessibility
-- Option 3: Sustainability
-- Option 4: Tech
-- Option 5: None
-- Option 6: Let me ask a question → **Knowledge Base Mode**
-
-### Q11: Discovery Source
-**Question:** "How did you hear about us?"
-
-**Options:**
-- Option 1: Search
-- Option 2: Referral
-- Option 3: Social
-- Option 4: Other
-- Option 5: Let me ask a question → **Knowledge Base Mode**
-
-### Q12: Other Role Handler
-**Question:** "[Echo description]. Retreat-related?"
-**Logic:** If yes → Go to Q3; else → provide help then resume
-
-### Q13: Industry/Sector
-**Question:** "Team's industry/sector? (e.g., tech, finance)"
-**Input Type:** Open text
-**Purpose:** Tailors suggestions
-
-### Q14: Location Preferences
-**Question:** "Location preferences? (e.g., tropical, urban)"
-**Input Type:** Open text
-**Response:** "We're in [tropical setting]; alternatives?"
-
-### Q15: Transportation
-**Question:** "Transportation needs? (e.g., airport shuttle)"
-
-**Options:**
-- Option 1: Yes, group transport
-- Option 2: Individual
-- Option 3: None
-- Option 4: Let me ask a question → **Knowledge Base Mode**
-
-### Q16: Accommodation
+### Q12: Accommodation
 **Question:** "Accommodation preferences?"
 
-**Options:**
-- Option 1: Shared rooms
-- Option 2: Single occupancy
-- Option 3: Mix
-- Option 4: Let me ask a question → **Knowledge Base Mode**
+**Options:** (multi-select with a confirm button)
+- Option 1: Attendees may share rooms (separate beds) - lowest cost option
+- Option 2: Attendees may share villas (separate rooms)
+- Option 3: Attendees each have a private villas (maximum privacy)
+- Confirm Button: (Saves the selected)
 
-### Q17: Meals
-**Question:** "Meal preferences? (e.g., catered, self)"
+### Q13: Pets/Family
+**Question:** "Any pets or family inclusions?"
 
-**Options:**
-- Option 1: Full catering
-- Option 2: Partial
-- Option 3: Dietary specifics
-- Option 4: Let me ask a question → **Knowledge Base Mode**
+**Options:** (multi-select with a confirm button)
+- Option 1: Pets
+- Option 2: Family (not participating in the retreat)
+- Confirm Button: (Saves the selected)
 
-### Q18: Agenda Structure
-**Question:** "Agenda structure? (e.g., structured days)"
-**Input Type:** Open text
-**Response:** "We support flexible schedules."
+### Q14: Meals
+**Question:** "Meal preferences?"
 
-### Q19: Past Experience
-**Question:** "Past retreat experiences? (Good/bad aspects)"
-**Input Type:** Open text
-**Purpose:** "Helps avoid pitfalls."
+**Options:** (multi-select with a confirm button)
+- Option 1: Eat at Green Office Restaurants (GO-restaurant)
+- Option 2: Eat in your Villa with Green Office supplying the food and cooking per your schedule (GO-cook)
+- Option 3: Eat in your villa with Green Office supplying the food and you cooking the food (self-cook)
+- Option 4: Eat in your villa with Green Office supplying your own food and cooking (self-all)
+- Confirm Button: (Saves the selected)
 
-### Q20: Decision Timeline
-**Question:** "Decision timeline? (e.g., weeks/months)"
-**Input Type:** Open text
-**Purpose:** "Urgency for booking?"
+### Q15: Workspace Requirements
+**Question:** "Select which workspace requirements you have for the retreat?"
 
-### Q21: Contact Preference
-**Question:** "Preferred contact? (Email/phone)"
+**Options:** (multi-select with a confirm button)
+- Option 1: Reliable, high-speed internet
+- Option 2: High quality office space (ergonomic chair/desk, plug-in ready docking station, dual monitor, keyboard, mouse, etc)
+- Option 3: Plug-in ready Projectors/whiteboard team working spaces
+- Option 4: 360 degree ocean view board-room for larger group meetings
+- Confirm Button: (Saves the selected)
 
-**Options:**
-- Option 1: Email
-- Option 2: Phone
-- Option 3: Both
-- Option 4: Let me ask a question → **Knowledge Base Mode**
-
-### Q22: Company Size
-**Question:** "Overall company size?"
+### Q16: Company Size
+**Question:** "What is your company's Overall size?"
 
 **Options:**
 - Option 1: <50 employees
 - Option 2: 50-500
 - Option 3: >500
-- Option 4: Let me ask a question → **Knowledge Base Mode**
+- Option 4: Unsure
 
-### Q23: Decision Role
-**Question:** "Your decision-making role?"
+### Q17: Industry
+**Question:** "What industry is your company in?"
+**Input Type:** Open text
+
+### Q18: Team
+**Question:** "What is a line or two description of the role the team (attending the retreat) plays in the company?"
+**Input Type:** Open text
+
+### Q19: Hybrid
+**Question:** "What is your team's current hybrid work model?  Please include details such as quarterly work-from-office weeks, days-per-week in office, etc"
+**Input Type:** Open text
+
+### Q20: Retreat History
+**Question:** "Where do you typically hold your team retreats?"
+- Option 1: Company Office
+- Option 2: Urban environment (Away from the office)
+- Option 3: Natural enviornment (Away from the office)
+- Option 4: Other
+
+### Q21: Additional Retreat Details
+**Question:** "Describe the different types of retreats/team events you hold and how frequently you hold them"
+**Input Type:** Open text
+
+### Q22: Role of Survey Taker
+**Question:** "Your role on the team (or in the company)?"
 
 **Options:**
-- Option 1: Sole decider
-- Option 2: Influencer
-- Option 3: Researcher
-- Option 4: Let me ask a question → **Knowledge Base Mode**
+- Option 1: Retreat Consultant/Planner
+- Option 2: Team Leader
+- Option 3: Team Assistant
+- Option 4: Senior Executive
+- Option 5: Other
 
-### Q24: Competition
-**Question:** "Competitors considered?"
-**Input Type:** Open text
-**Follow-up:** "What stands out about them?"
-
-### Q25: Customization
-**Question:** "Customizations needed? (e.g., branding)"
-**Input Type:** Open text
-**Response:** "We offer personalization."
-
-### Q26: Sustainability
-**Question:** "Sustainability priorities? (e.g., carbon offset)"
+### Q23: Discovery Source
+**Question:** "How did you first learn about Green Office?"
 
 **Options:**
-- Option 1: High
-- Option 2: Medium
-- Option 3: Low
-- Option 4: Let me ask a question → **Knowledge Base Mode**
+- Option 1: LinkedIn
+- Option 2: Online Search
+- Option 3: Word of Mouth / Referral
+- Option 4: Conference
+- Option 5: Other
 
-### Q27: Tech Requirements
-**Question:** "Detailed tech requirements? (e.g., bandwidth)"
-**Input Type:** Open text
-**Response:** "Our high-speed setup covers most."
+### Q24: Decision Timeline
+**Question:** "By what date do you need to firm up your retreat decision?"
+**Input Type:** Date
 
-### Q28: Team Demographics
-**Question:** "Team demographics? (e.g., remote/hybrid)"
-
-**Options:**
-- Option 1: Fully remote
-- Option 2: Hybrid
-- Option 3: In-office
-- Option 4: Let me ask a question → **Knowledge Base Mode**
-
-### Q29: Budget Breakdown
-**Question:** "Budget breakdown? (e.g., % for venue/food)"
-**Input Type:** Open text
-**Purpose:** "Helps optimize packages."
-
-### Q30: Pets/Family
-**Question:** "Any pets or family inclusions?"
-
-**Options:**
-- Option 1: Yes, pets
-- Option 2: Yes, family
-- Option 3: No
-- Option 4: Let me ask a question → **Knowledge Base Mode**
-
-### Q31: Virtual Elements
-**Question:** "Virtual elements? (e.g., hybrid retreat)"
-
-**Options:**
-- Option 1: Yes
-- Option 2: No
-- Option 3: Let me ask a question → **Knowledge Base Mode**
-
-### Q32: Insurance
-**Question:** "Insurance/liability needs?"
-**Input Type:** Open text
-**Response:** "We provide standard coverage."
-
-### Q33: Website Feedback
-**Question:** "Feedback on our site? (If visited)"
-**Input Type:** Open text
-**Purpose:** "Improves our service."
-
-### Q34: Referral Potential
-**Question:** "Referral potential? (e.g., for future)"
-**Input Type:** Open text
-**Response:** "We have programs."
-
-### Q35: Final Catch-All
-**Question:** "Anything else to share?"
-**Input Type:** Open text
-**Purpose:** Final opportunity for additional information
+### Q25: First Call
+**Question:** "Would you like us to first contact you prior to offering the space to a client lower in the queue?"
+**Input Type:** Yes/No
 
 ## Flow Convergence/Ending
 
-**Trigger:** After approximately 10-15 questions per path, or user fatigue indicators
-
 **Final Message:**
-"Thanks! Summary: [Echo key information gathered]. Great fit (or notes). Email for personalized details? Then to www.greenofficevillas.com!"
-
-**Actions:**
-1. Summarize collected information
-2. Provide fit assessment
-3. Request email for lead capture
-4. Redirect to main website
+All chat sessions should end in one of the four: (with the flow for each defined in the relevant section above)
+**Planner Lead Capture**
+**Planner Lead Capture**
+**Actual Retreat Lead Capture**
+**Actual Retreat Lead Capture**
 
 ## Flow Management Rules
 
