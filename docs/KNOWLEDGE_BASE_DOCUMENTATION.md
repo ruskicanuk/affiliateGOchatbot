@@ -20,11 +20,11 @@ This document outlines the knowledge base system that handles user-initiated que
 export const KNOWLEDGE_BASE = {
   "pricing": {
     keywords: ["price", "cost", "pricing", "budget"],
-    response: "Packages start at $800 per person for 3-day retreats..."
+    response: "Packages start at <$500 per attendee..."
   },
   "location": {
     keywords: ["location", "where", "address"],
-    response: "Located in tropical Southeast Asia with Bali-inspired architecture..."
+    response: "Located in the Dominican Republic with Caribbean-inspired architecture..."
   },
   "amenities": {
     keywords: ["amenities", "facilities", "features"],
