@@ -13,14 +13,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get or create session
-    let session = await db.getSession(sessionId);
+    // Get or create session using robust handling
+    const session = await db.getOrCreateSession(sessionId);
     if (!session) {
-      session = await db.createSession(sessionId);
+      // If we can't get or create a session, continue without database persistence
+      console.warn('Unable to get or create session, continuing without persistence');
+      return NextResponse.json({
+        success: true,
+        sessionId: sessionId,
+        warning: 'Session not persisted to database'
+      });
     }
 
-    // Add user message to database
-    await db.addMessage(sessionId, messageType, message);
+    // Add user message to database (with error handling)
+    try {
+      await db.addMessage(sessionId, messageType, message);
+    } catch (error) {
+      console.warn('Failed to persist message to database:', error);
+      // Continue without failing the request
+    }
 
     // Initialize chatbot with session state
     const chatbot = new SimpleChatbot();
@@ -29,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      sessionId: session.sessionId
+      sessionId: session?.sessionId || sessionId
     });
 
   } catch (error) {
@@ -53,13 +64,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await db.getSession(sessionId);
-    const messages = await db.getMessages(sessionId);
+    try {
+      const session = await db.getOrCreateSession(sessionId);
+      const messages = await db.getMessages(sessionId);
 
-    return NextResponse.json({
-      session,
-      messages
-    });
+      return NextResponse.json({
+        session,
+        messages
+      });
+    } catch (error) {
+      console.warn('Failed to get session/messages from database:', error);
+      return NextResponse.json({
+        session: null,
+        messages: [],
+        warning: 'Database not available'
+      });
+    }
 
   } catch (error) {
     console.error('Chat API error:', error);

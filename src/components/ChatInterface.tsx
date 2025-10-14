@@ -15,9 +15,6 @@ export const ChatInterface: React.FC = () => {
   const [sessionId] = useState(() => uuidv4());
   const [chatbot] = useState(() => new SimpleChatbot());
   const [isLoading, setIsLoading] = useState(false);
-  const [showLeadCapture, setShowLeadCapture] = useState(false);
-  const [leadCaptureMessage, setLeadCaptureMessage] = useState('');
-  const [currentInput, setCurrentInput] = useState('');
   
   // Input field management
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
@@ -96,47 +93,56 @@ export const ChatInterface: React.FC = () => {
       isCompleted: false
     };
 
-    // Determine option type and configure message accordingly
-    switch (question.type) {
-      case 'multiple_choice':
-        message.options = question.options;
-        message.optionType = OptionType.SINGLE_SELECT;
-        break;
-        
-      case 'multiple_choice_multi_select':
-        message.options = question.options;
-        message.optionType = OptionType.MULTI_SELECT;
-        break;
-        
-      case 'text':
-        message.options = ['Enter your answer'];
-        message.optionType = OptionType.CUSTOM_RESPONSE;
-        message.inputType = InputType.TEXT;
-        break;
-        
-      case 'number':
-        const numberButtonText = question.id === 'Q3' ? 'Enter number of attendees' : 'Enter number';
-        message.options = [numberButtonText];
-        message.optionType = OptionType.CUSTOM_RESPONSE;
-        message.inputType = InputType.NUMBER;
-        break;
-        
-      case 'date':
-        const dateButtonText = question.id === 'Q4' ? 'Enter retreat date' :
-                              question.id === 'Q24' ? 'Enter decision date' : 'Enter date';
-        message.options = [dateButtonText];
-        message.optionType = OptionType.CUSTOM_RESPONSE;
-        message.inputType = InputType.DATE;
-        break;
-        
-      case 'yes_no':
-        message.options = ['Yes', 'No'];
-        message.optionType = OptionType.SINGLE_SELECT;
-        break;
-        
-      default:
-        message.type = 'bot';
-        message.options = undefined;
+    // Use explicit option type if defined, otherwise determine from question type
+    if (question.optionType && question.options) {
+      message.options = question.options;
+      message.optionType = question.optionType;
+      if (question.inputType) {
+        message.inputType = question.inputType;
+      }
+    } else {
+      // Determine option type and configure message accordingly
+      switch (question.type) {
+        case 'multiple_choice':
+          message.options = question.options;
+          message.optionType = OptionType.SINGLE_SELECT;
+          break;
+
+        case 'multiple_choice_multi_select':
+          message.options = question.options;
+          message.optionType = OptionType.MULTI_SELECT;
+          break;
+
+        case 'text':
+          message.options = ['Enter your answer'];
+          message.optionType = OptionType.CUSTOM_RESPONSE;
+          message.inputType = InputType.TEXT;
+          break;
+
+        case 'number':
+          const numberButtonText = question.id === 'Q3' ? 'Enter number of attendees' : 'Enter number';
+          message.options = [numberButtonText];
+          message.optionType = OptionType.CUSTOM_RESPONSE;
+          message.inputType = InputType.NUMBER;
+          break;
+
+        case 'date':
+          const dateButtonText = question.id === 'Q4' ? 'Enter retreat date' :
+                                question.id === 'Q24' ? 'Enter decision date' : 'Enter date';
+          message.options = [dateButtonText];
+          message.optionType = OptionType.CUSTOM_RESPONSE;
+          message.inputType = InputType.DATE;
+          break;
+
+        case 'yes_no':
+          message.options = ['Yes', 'No'];
+          message.optionType = OptionType.SINGLE_SELECT;
+          break;
+
+        default:
+          message.type = 'bot';
+          message.options = undefined;
+      }
     }
 
     return message;
@@ -161,7 +167,17 @@ export const ChatInterface: React.FC = () => {
         const dbType = type.startsWith('bot') ? 'bot' : (type === 'user' ? 'user' : 'bot');
         await db.addMessage(sessionId, dbType as 'bot' | 'user' | 'knowledge_base', content);
       } catch (error) {
-        console.warn('Database not available, message not persisted:', error instanceof Error ? error.message : error);
+        // More detailed error logging for debugging
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.warn('Database operation failed, continuing without persistence:', {
+          sessionId,
+          messageType: type,
+          error: errorMessage,
+          timestamp: new Date().toISOString()
+        });
+
+        // App continues to work normally even if database fails
+        // This ensures the user experience is not interrupted
       }
     }
   };
@@ -181,15 +197,16 @@ export const ChatInterface: React.FC = () => {
         await addMessage('bot', result.response);
       }
 
-      if (result.nextQuestion === 'LEAD_CAPTURE') {
-        setLeadCaptureMessage(result.response || "Please provide your email so we can follow up with you.");
-        setShowLeadCapture(true);
-      } else {
-        const nextQuestion = chatbot.getCurrentQuestion();
-        if (nextQuestion) {
-          const questionMessage = await createQuestionMessage(nextQuestion);
-          setMessages(prev => [...prev, questionMessage]);
-        }
+      // Handle conversation end
+      if (result.nextQuestion === 'END') {
+        // Conversation has ended, no more questions
+        return;
+      }
+
+      const nextQuestion = chatbot.getCurrentQuestion();
+      if (nextQuestion) {
+        const questionMessage = await createQuestionMessage(nextQuestion);
+        setMessages(prev => [...prev, questionMessage]);
       }
     } catch (error) {
       console.error('Error processing response:', error);
@@ -199,19 +216,7 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
-  const handleLeadCapture = async (email: string) => {
-    setIsLoading(true);
-    try {
-      await addMessage('user', email);
-      await addMessage('bot', 'Thank you! We\'ll be in touch soon.');
-      setShowLeadCapture(false);
-      setCurrentInput('');
-    } catch (error) {
-      console.error('Error capturing lead:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
 
   // Handle option selection
   const handleOptionSelect = async (optionIndex: number, messageId: string) => {
@@ -732,28 +737,7 @@ export const ChatInterface: React.FC = () => {
 
       {/* Chat Container */}
       <div className="flex-1 flex flex-col min-h-0">
-        {/* Lead Capture Modal */}
-        {showLeadCapture && (
-          <div className="p-6 border-b border-gray-200 bg-blue-50">
-            <h3 className="font-semibold mb-2">Let's stay in touch!</h3>
-            <p className="text-sm text-gray-600 mb-3">{leadCaptureMessage}</p>
-            <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="your.email@company.com"
-                value={currentInput}
-                onChange={(e) => setCurrentInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && currentInput.trim() && handleLeadCapture(currentInput.trim())}
-              />
-              <Button
-                onClick={() => currentInput.trim() && handleLeadCapture(currentInput.trim())}
-                disabled={!currentInput.trim()}
-              >
-                Submit
-              </Button>
-            </div>
-          </div>
-        )}
+
 
         {/* Chat Messages - Full height scrollable area */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">

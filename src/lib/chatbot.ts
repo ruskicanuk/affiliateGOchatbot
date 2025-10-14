@@ -1,5 +1,5 @@
 // Core chatbot logic rebuilt to match CHATBOT_FLOW_DOCUMENTATION.md
-import { Question } from '@/types';
+import { Question, OptionType, InputType } from '@/types';
 
 // Complete question flow implementation based on documentation
 export const QUESTIONS: Record<string, Question> = {
@@ -354,6 +354,38 @@ export const QUESTIONS: Record<string, Question> = {
     text: "Would you like us to first contact you prior to offering the space to a client lower in the queue?",
     type: 'yes_no',
     next: (answer: boolean) => 'ACTUAL_RETREAT_PROSPECT_CAPTURE'
+  },
+
+  // Lead Capture Questions
+  LEAD_INTRO_CALL: {
+    id: 'LEAD_INTRO_CALL',
+    text: "Hope this interaction was helpful. Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20-minute introductory call with our team - does that work?",
+    options: ["Yes", "No"],
+    optionType: OptionType.SINGLE_SELECT,
+    type: 'multiple_choice',
+    next: (answer: number) => {
+      if (answer === 0) return 'LEAD_EMAIL_COLLECTION'; // Yes
+      return 'LEAD_THANK_YOU'; // No
+    }
+  },
+
+  LEAD_EMAIL_COLLECTION: {
+    id: 'LEAD_EMAIL_COLLECTION',
+    text: "Great! Please provide your email address so we can schedule the call.",
+    options: ["Enter your email address"],
+    optionType: OptionType.CUSTOM_RESPONSE,
+    inputType: InputType.EMAIL,
+    type: 'text',
+    validation: { required: true },
+    next: () => 'LEAD_THANK_YOU'
+  },
+
+  LEAD_THANK_YOU: {
+    id: 'LEAD_THANK_YOU',
+    text: "Thank you! We'll be in touch soon.",
+    options: [],
+    type: 'text',
+    next: () => 'END'
   }
 };
 
@@ -432,33 +464,30 @@ export class SimpleChatbot {
     // Get next question
     const nextQuestionId = question.next(answer);
     
-    // Handle special ending cases
+    // Handle special ending cases - redirect to lead capture flow
     if (nextQuestionId === 'PLANNER_LEAD_CAPTURE') {
-      return {
-        nextQuestion: 'LEAD_CAPTURE',
-        response: "Hope this interaction was helpful. I'll update our team with the summary"
-      };
+      this.currentQuestion = 'LEAD_INTRO_CALL';
+      return { nextQuestion: 'LEAD_INTRO_CALL' };
     }
 
     if (nextQuestionId === 'PLANNER_PROSPECT_CAPTURE') {
-      return {
-        nextQuestion: 'LEAD_CAPTURE',
-        response: "Hope this interaction was helpful. Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team - does that work?"
-      };
+      this.currentQuestion = 'LEAD_INTRO_CALL';
+      return { nextQuestion: 'LEAD_INTRO_CALL' };
     }
 
     if (nextQuestionId === 'ACTUAL_RETREAT_LEAD_CAPTURE') {
-      return {
-        nextQuestion: 'LEAD_CAPTURE',
-        response: "I'll update our team with the summary of our chat. The fit today may not be perfect, but I suspect we'll want to stay in touch."
-      };
+      this.currentQuestion = 'LEAD_INTRO_CALL';
+      return { nextQuestion: 'LEAD_INTRO_CALL' };
     }
 
     if (nextQuestionId === 'ACTUAL_RETREAT_PROSPECT_CAPTURE') {
-      return {
-        nextQuestion: 'LEAD_CAPTURE',
-        response: "Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team to get further into your retreat details - does that work?"
-      };
+      this.currentQuestion = 'LEAD_INTRO_CALL';
+      return { nextQuestion: 'LEAD_INTRO_CALL' };
+    }
+
+    // Handle conversation end
+    if (nextQuestionId === 'END') {
+      return { nextQuestion: 'END' };
     }
 
     this.currentQuestion = nextQuestionId;
