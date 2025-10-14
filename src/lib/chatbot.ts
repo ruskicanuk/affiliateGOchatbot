@@ -1,5 +1,5 @@
 // Core chatbot logic rebuilt to match CHATBOT_FLOW_DOCUMENTATION.md
-import { Question, OptionType, InputType } from '@/types';
+import { Question, InputType } from '@/types';
 
 // Complete question flow implementation based on documentation
 export const QUESTIONS: Record<string, Question> = {
@@ -8,8 +8,8 @@ export const QUESTIONS: Record<string, Question> = {
     text: "What best describes your role?",
     type: 'multiple_choice',
     options: [
-      "Our clients engage me (or my company) to help facilitate retreats in some manner (e.g., planner/platform/consultants)",
-      "We are looking at options for an upcoming team retreat (eg. I am a team leader, team assistant, etc)"
+      "Retreat Facilitator. Our clients engage me (or my company) to help facilitate retreats in some manner (ie. as a planner, consultant or to use our platform)",
+      "Team Member/Leader. Our team is looking at options for an upcoming team retreat (ie. as a team leader or member)"
     ],
     next: (answer: number) => {
       if (answer === 0) return 'Q2';
@@ -21,38 +21,38 @@ export const QUESTIONS: Record<string, Question> = {
   // Branch A: Planner Path (Q1 → Q2)
   Q2: {
     id: 'Q2',
-    text: "We may be a great fit! Green Office is purpose-built to help retreat planners/platforms/consultants offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?",
+    text: "We may be a great fit! Green Office is purpose-built to help retreat facilitators (planners/platforms/consultants) offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?",
     type: 'multiple_choice',
     options: [
-      "I am planning an upcoming retreat for a client — curious if Green Office is a fit",
-      "Exploring potential venues for our platform or portfolio"
+      "Exploring potential venues for our platform or portfolio",
+      "I am planning a specific upcoming retreat for a client — curious if Green Office is a fit for it"
     ],
     next: (answer: number) => {
-      if (answer === 0) return 'Q2_1';
-      if (answer === 1) return 'Q2_2_1';
+      if (answer === 0) return 'Q2_2_1';
+      if (answer === 1) return 'Q2_1';
       return 'Q2';
     }
   },
 
   Q2_1: {
     id: 'Q2_1',
-    text: "Perfect, let's sketch out the retreat plan",
+    text: "Great, let's dig into your upcoming retreat to see if it is a fit",
     type: 'multiple_choice',
-    options: ["Continue to retreat planning"],
-    next: (answer: number) => 'Q3' // Skip to Q3 and follow the flow from there
+    options: ["Continue"],
+    next: () => 'Q3'
   },
 
   Q2_2_1: {
     id: 'Q2_2_1',
-    text: "Interesting, Green Office might help differentiate your platform versus the competition. I feel we may want to escalate your interest to a meeting with our leadership team to explore partnership models. How many retreats are organized by your company or through your platform per year?",
+    text: "Perfect. Green Office is designed to help differentiate your platform versus the competition. I feel we may want to escalate your interest to a meeting with our leadership team to explore partnership models. How many retreats are organized by your company or through your platform per year?",
     type: 'multiple_choice',
     options: [
       "Fewer than 10",
-      "10 to 100", 
+      "10 to 100",
       "100 to 1,000",
       "1,000+"
     ],
-    next: (answer: number) => 'Q2_2_2'
+    next: () => 'Q2_2_2'
   },
 
   Q2_2_2: {
@@ -60,18 +60,30 @@ export const QUESTIONS: Record<string, Question> = {
     text: "What best describes the scale of average retreat organized by your company or through your platform?",
     type: 'multiple_choice',
     options: [
-      "Consistently small (less than 20 per retreat on average) with little variation",
-      "Small (less than 20 per retreat on average) but ranges widely",
-      "Consistently moderate (20-50 per retreat on average) with little variation", 
-      "Moderate (20-50 per retreat on average) but ranges widely",
-      "Consistently large (over 50 per retreat on average) with little variation",
-      "Large (over 50 per retreat on average) but ranges widely"
+      "Consistently small (less than 20 per retreat on average) with little variation in size",
+      "Variably small (less than 20 per retreat on average) with lots of variation in size",
+      "Consistently moderate (20-50 per retreat on average) with little variation in size",
+      "Variably moderate (20-50 per retreat on average) with lots of variation in size",
+      "Consistently large (over 50 per retreat on average) with little variation in size",
+      "Variably large (over 50 per retreat on average) with lots of variation in size"
     ],
     next: (answer: number) => {
-      if (answer >= 0 && answer <= 3) return 'Q2_2_3'; // Options 1-4
-      if (answer === 4) return 'PLANNER_LEAD_CAPTURE'; // Option 5
-      if (answer === 5) return 'Q2_2_3'; // Option 6
+      if (answer >= 0 && answer <= 3) return 'Q2_2_3';
+      if (answer === 4) return 'PLANNER_LEAD_CAPTURE';
+      if (answer === 5) return 'Q2_2_3';
       return 'Q2_2_2';
+    },
+    responseMessage: (answer: number) => {
+      if (answer >= 0 && answer <= 3) {
+        return "Green Office is purpose-built for retreats of that size.";
+      }
+      if (answer === 4) {
+        return "We are expanding capacity to serve companies of your scale in 2027-2028; I can keep you updated if you provide me your email";
+      }
+      if (answer === 5) {
+        return "We are expanding capacity to serve companies of your scale in 2027-2028; However, since you said your retreat size is wide-ranging, I'll bet we can accommodate some of the smaller retreats. Our current capacity is 50 attendees though we are planning to expand to 300+ in 2027-2028";
+      }
+      return "";
     }
   },
 
@@ -85,7 +97,7 @@ export const QUESTIONS: Record<string, Question> = {
       "Moderate, we manage a mix of retreat planning services depending on the client",
       "Active, most of our clients use us to fully manage the retreat end to end"
     ],
-    next: (answer: number) => 'PLANNER_PROSPECT_CAPTURE'
+    next: () => 'PLANNER_PROSPECT_CAPTURE'
   },
 
   // Branch B: Actual Retreat Path, Determining Fit (Q1 → Q3)
@@ -99,7 +111,22 @@ export const QUESTIONS: Record<string, Question> = {
       if (answer === 1) return 'ACTUAL_RETREAT_LEAD_CAPTURE';
       if (answer > 50) return 'ACTUAL_RETREAT_LEAD_CAPTURE';
       if (answer === 0) return 'ACTUAL_RETREAT_LEAD_CAPTURE';
-      return 'Q3'; // Invalid input - repeat question
+      return 'Q3';
+    },
+    responseMessage: (answer: number) => {
+      if (answer >= 2 && answer <= 50) {
+        return "Perfect. Green Office is purpose-built for retreats of that size.";
+      }
+      if (answer === 1) {
+        return "Sounds like quite the introverted retreat! We do have some individual bookings though retreats are what we are built for.";
+      }
+      if (answer > 50) {
+        return "We are expanding capacity to serve companies of your scale in 2027-2028; Our current capacity is 50 attendees. Unless you can break up the retreat into sub groups, we might be too small to properly accommodate your team.";
+      }
+      if (answer === 0) {
+        return "Maybe you aren't ready to commit to a retreat just yet. Could make sense to get your contact info so we can follow up with you later.";
+      }
+      return "I do not understand that response. Please enter a number.";
     }
   },
 
@@ -113,17 +140,31 @@ export const QUESTIONS: Record<string, Question> = {
       const cutoffDate = new Date('2026-11-01');
       if (inputDate < cutoffDate) return 'ACTUAL_RETREAT_LEAD_CAPTURE';
       return 'Q5';
+    },
+    responseMessage: (answer: string) => {
+      const inputDate = new Date(answer);
+      const cutoffDate = new Date('2026-11-01');
+      if (inputDate < cutoffDate) {
+        return "Unfortunately, Green Office won't be open quite yet on that day. But do not lose heart! We are aiming to open in December of 2026";
+      }
+      return "";
     }
   },
 
   Q5: {
-    id: 'Q5', 
+    id: 'Q5',
     text: "Approximately, how many days long do you expect the retreat to run?",
     type: 'number',
     validation: { min: 1, required: true },
     next: (answer: number) => {
       if (answer >= 3 && answer <= 120) return 'Q6';
-      return 'ACTUAL_RETREAT_PROSPECT_CAPTURE'; // Any other value
+      return 'ACTUAL_RETREAT_PROSPECT_CAPTURE';
+    },
+    responseMessage: (answer: number) => {
+      if (answer >= 3 && answer <= 120) {
+        return "Green Office is purpose-built for your team size, we are operational on your start date and the retreat duration fits perfectly";
+      }
+      return "Unfortunately, Green Office may not be a good fit for that retreat duration. Probably we should connect to clarify as the duration is a bit unusual for a retreat";
     }
   },
 
@@ -356,35 +397,188 @@ export const QUESTIONS: Record<string, Question> = {
     next: (answer: boolean) => 'ACTUAL_RETREAT_PROSPECT_CAPTURE'
   },
 
-  // Lead Capture Questions
-  LEAD_INTRO_CALL: {
-    id: 'LEAD_INTRO_CALL',
-    text: "Hope this interaction was helpful. Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20-minute introductory call with our team - does that work?",
-    options: ["Yes", "No"],
-    optionType: OptionType.SINGLE_SELECT,
+  // Lead Capture Flows
+  PLANNER_LEAD_CAPTURE: {
+    id: 'PLANNER_LEAD_CAPTURE',
+    text: "Hope this interaction was helpful. I'll update our team with the summary",
     type: 'multiple_choice',
-    next: (answer: number) => {
-      if (answer === 0) return 'LEAD_EMAIL_COLLECTION'; // Yes
-      return 'LEAD_THANK_YOU'; // No
+    options: ["Continue"],
+    next: () => 'GREEN_OFFICE_UPDATE_OPTIONS'
+  },
+
+  PLANNER_PROSPECT_CAPTURE: {
+    id: 'PLANNER_PROSPECT_CAPTURE',
+    text: "Hope this interaction was helpful. Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team - does that work?",
+    type: 'yes_no',
+    next: (answer: boolean) => {
+      if (answer) return 'ACQUIRE_NAME';
+      return 'GREEN_OFFICE_UPDATE_OPTIONS';
     }
   },
 
-  LEAD_EMAIL_COLLECTION: {
-    id: 'LEAD_EMAIL_COLLECTION',
-    text: "Great! Please provide your email address so we can schedule the call.",
-    options: ["Enter your email address"],
-    optionType: OptionType.CUSTOM_RESPONSE,
-    inputType: InputType.EMAIL,
-    type: 'text',
-    validation: { required: true },
-    next: () => 'LEAD_THANK_YOU'
+  ACTUAL_RETREAT_LEAD_CAPTURE: {
+    id: 'ACTUAL_RETREAT_LEAD_CAPTURE',
+    text: "I'll update our team with the summary of our chat. The fit today may not be perfect, but I suspect we'll want to stay in touch.",
+    type: 'multiple_choice',
+    options: ["Continue"],
+    next: () => 'GREEN_OFFICE_UPDATE_OPTIONS'
   },
 
-  LEAD_THANK_YOU: {
-    id: 'LEAD_THANK_YOU',
-    text: "Thank you! We'll be in touch soon.",
-    options: [],
+  ACTUAL_RETREAT_PROSPECT_CAPTURE: {
+    id: 'ACTUAL_RETREAT_PROSPECT_CAPTURE',
+    text: "Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team to get further into your retreat details - does that work?",
+    type: 'yes_no',
+    next: (answer: boolean) => {
+      if (answer) return 'ACQUIRE_NAME';
+      return 'GREEN_OFFICE_UPDATE_OPTIONS';
+    }
+  },
+
+  // Green Office Update Options Flow
+  GREEN_OFFICE_UPDATE_OPTIONS: {
+    id: 'GREEN_OFFICE_UPDATE_OPTIONS',
+    text: "How do you prefer to stay updated?",
+    type: 'multiple_choice',
+    options: [
+      "Put me in the waitlist queue (first come, first serve)",
+      "Contact me by email after a set number of months",
+      "Contact me by phone after a set number of months",
+      "Keep me informed of Green Office project updates",
+      "I do not see a fit at this time nor at any time in the future"
+    ],
+    next: (answer: number) => {
+      if (answer === 0) return 'ACQUIRE_NAME';
+      if (answer === 1) return 'UPDATE_OPTIONS_MONTHS_EMAIL';
+      if (answer === 2) return 'UPDATE_OPTIONS_MONTHS_PHONE';
+      if (answer === 3) return 'ACQUIRE_NAME';
+      if (answer === 4) return 'END_NO_FIT';
+      return 'GREEN_OFFICE_UPDATE_OPTIONS';
+    }
+  },
+
+  UPDATE_OPTIONS_MONTHS_EMAIL: {
+    id: 'UPDATE_OPTIONS_MONTHS_EMAIL',
+    text: "How many months from now would you like us to contact you?",
+    type: 'number',
+    validation: { min: 1, required: true },
+    next: () => 'ACQUIRE_NAME'
+  },
+
+  UPDATE_OPTIONS_MONTHS_PHONE: {
+    id: 'UPDATE_OPTIONS_MONTHS_PHONE',
+    text: "How many months from now would you like us to contact you?",
+    type: 'number',
+    validation: { min: 1, required: true },
+    next: () => 'ACQUIRE_NAME'
+  },
+
+  END_NO_FIT: {
+    id: 'END_NO_FIT',
+    text: "All good, you know where to find us if you see a change in fit potential!",
+    type: 'multiple_choice',
+    options: ["End conversation"],
+    next: () => 'END'
+  },
+
+  // Acquire Contact Information Flow
+  ACQUIRE_NAME: {
+    id: 'ACQUIRE_NAME',
+    text: "What is your name?",
     type: 'text',
+    validation: { required: true },
+    next: () => 'ACQUIRE_COMPANY'
+  },
+
+  ACQUIRE_COMPANY: {
+    id: 'ACQUIRE_COMPANY',
+    text: "What company are you with?",
+    type: 'text',
+    validation: { required: true },
+    next: () => 'ACQUIRE_EMAIL'
+  },
+
+  ACQUIRE_EMAIL: {
+    id: 'ACQUIRE_EMAIL',
+    text: "What is your email address?",
+    type: 'text',
+    inputType: InputType.EMAIL,
+    validation: { required: true },
+    next: () => 'ACQUIRE_PHONE'
+  },
+
+  ACQUIRE_PHONE: {
+    id: 'ACQUIRE_PHONE',
+    text: "What is your phone number?",
+    type: 'text',
+    validation: { required: true },
+    next: () => 'CONTACT_CONFIRMATION'
+  },
+
+  CONTACT_CONFIRMATION: {
+    id: 'CONTACT_CONFIRMATION',
+    text: "", // Will be dynamically generated
+    type: 'yes_no',
+    next: (answer: boolean) => {
+      if (answer) return 'CONTACT_CONFIRMED';
+      return 'CONTACT_CORRECTION';
+    }
+  },
+
+  CONTACT_CORRECTION: {
+    id: 'CONTACT_CORRECTION',
+    text: "What would you like to correct? (Please type: name, company, email, or phone)",
+    type: 'text',
+    next: () => 'ACQUIRE_NAME' // Will be handled with logic
+  },
+
+  CONTACT_CONFIRMED: {
+    id: 'CONTACT_CONFIRMED',
+    text: "", // Will be dynamically generated
+    type: 'multiple_choice',
+    options: ["Continue"],
+    next: () => 'END' // Will be overridden if scheduling needed
+  },
+
+  // Schedule Call Flow
+  SCHEDULE_CALL_PROPOSE: {
+    id: 'SCHEDULE_CALL_PROPOSE',
+    text: "Great! When would work best for a 20-minute introductory call?",
+    type: 'multiple_choice',
+    options: [
+      "Tomorrow at 2:00 PM",
+      "Friday at 10:00 AM",
+      "Next Monday at 3:00 PM",
+      "Propose a different date and time"
+    ],
+    next: (answer: number) => {
+      if (answer === 3) return 'SCHEDULE_CALL_CUSTOM';
+      return 'SCHEDULE_CALL_CONFIRM';
+    }
+  },
+
+  SCHEDULE_CALL_CUSTOM: {
+    id: 'SCHEDULE_CALL_CUSTOM',
+    text: "Please propose a date and time that works for you",
+    type: 'text',
+    validation: { required: true },
+    next: () => 'SCHEDULE_CALL_CONFIRM'
+  },
+
+  SCHEDULE_CALL_CONFIRM: {
+    id: 'SCHEDULE_CALL_CONFIRM',
+    text: "", // Will be dynamically generated
+    type: 'yes_no',
+    next: (answer: boolean) => {
+      if (answer) return 'SCHEDULE_CALL_CONFIRMED';
+      return 'SCHEDULE_CALL_PROPOSE';
+    }
+  },
+
+  SCHEDULE_CALL_CONFIRMED: {
+    id: 'SCHEDULE_CALL_CONFIRMED',
+    text: "Perfect! Email sent to you and admin@greenofficevillas.com with the meeting details. We look forward to speaking with you!",
+    type: 'multiple_choice',
+    options: ["End conversation"],
     next: () => 'END'
   }
 };
@@ -392,7 +586,21 @@ export const QUESTIONS: Record<string, Question> = {
 export class SimpleChatbot {
   private currentQuestion: string = 'Q1';
   private userResponses: Record<string, any> = {};
-  private conditionalQuestions: string[] = []; // Track which conditional questions to show
+  private conditionalQuestions: string[] = [];
+
+  // Contact information tracking
+  private contactInfo: {
+    name?: string;
+    company?: string;
+    email?: string;
+    phone?: string;
+  } = {};
+
+  // Flow state tracking
+  private updateOption?: number;
+  private updateMonths?: number;
+  private scheduledTime?: string;
+  private needsScheduling: boolean = false;
 
   constructor() {
     this.reset();
@@ -402,10 +610,51 @@ export class SimpleChatbot {
     this.currentQuestion = 'Q1';
     this.userResponses = {};
     this.conditionalQuestions = [];
+    this.contactInfo = {};
+    this.updateOption = undefined;
+    this.updateMonths = undefined;
+    this.scheduledTime = undefined;
+    this.needsScheduling = false;
   }
 
   getCurrentQuestion(): Question | null {
-    return QUESTIONS[this.currentQuestion] || null;
+    const question = QUESTIONS[this.currentQuestion];
+    if (!question) return null;
+
+    // Generate dynamic text for certain questions
+    if (question.id === 'CONTACT_CONFIRMATION') {
+      return {
+        ...question,
+        text: `Please confirm your contact information:\n\nName: ${this.contactInfo.name}\nCompany: ${this.contactInfo.company}\nEmail: ${this.contactInfo.email}\nPhone: ${this.contactInfo.phone}\n\nIs this correct?`
+      };
+    }
+
+    if (question.id === 'CONTACT_CONFIRMED') {
+      let message = "Thank you! ";
+      if (this.updateOption === 0) {
+        message += "Green Office will contact you when bookings are available and you are at the front of the waitlist.";
+      } else if (this.updateOption === 1) {
+        message += `Green Office will contact you in ${this.updateMonths} months by email.`;
+      } else if (this.updateOption === 2) {
+        message += `Green Office will contact you in ${this.updateMonths} months by phone.`;
+      } else if (this.updateOption === 3) {
+        message += "Green Office will keep you up to date with project updates.";
+      }
+      return {
+        ...question,
+        text: message
+      };
+    }
+
+    if (question.id === 'SCHEDULE_CALL_CONFIRM') {
+      const time = this.scheduledTime || "the proposed time";
+      return {
+        ...question,
+        text: `Just to confirm, you'd like to schedule the call for ${time}. Is that correct?`
+      };
+    }
+
+    return question;
   }
 
   processResponse(answer: any): { nextQuestion: string; response?: string } {
@@ -415,24 +664,94 @@ export class SimpleChatbot {
     // Store the response
     this.userResponses[question.id] = answer;
 
+    // Track contact information
+    if (question.id === 'ACQUIRE_NAME') this.contactInfo.name = answer;
+    if (question.id === 'ACQUIRE_COMPANY') this.contactInfo.company = answer;
+    if (question.id === 'ACQUIRE_EMAIL') this.contactInfo.email = answer;
+    if (question.id === 'ACQUIRE_PHONE') this.contactInfo.phone = answer;
+
+    // Track update options
+    if (question.id === 'GREEN_OFFICE_UPDATE_OPTIONS') {
+      this.updateOption = answer;
+    }
+    if (question.id === 'UPDATE_OPTIONS_MONTHS_EMAIL' || question.id === 'UPDATE_OPTIONS_MONTHS_PHONE') {
+      this.updateMonths = answer;
+    }
+
+    // Track scheduling
+    if (question.id === 'PLANNER_PROSPECT_CAPTURE' || question.id === 'ACTUAL_RETREAT_PROSPECT_CAPTURE') {
+      this.needsScheduling = answer === true;
+    }
+    if (question.id === 'SCHEDULE_CALL_PROPOSE' && answer !== 3) {
+      const options = question.options || [];
+      this.scheduledTime = options[answer];
+    }
+    if (question.id === 'SCHEDULE_CALL_CUSTOM') {
+      this.scheduledTime = answer;
+    }
+
+    // Handle contact correction
+    if (question.id === 'CONTACT_CORRECTION') {
+      const correction = answer.toLowerCase().trim();
+      if (correction.includes('name')) {
+        this.currentQuestion = 'ACQUIRE_NAME';
+        return { nextQuestion: 'ACQUIRE_NAME' };
+      }
+      if (correction.includes('company')) {
+        this.currentQuestion = 'ACQUIRE_COMPANY';
+        return { nextQuestion: 'ACQUIRE_COMPANY' };
+      }
+      if (correction.includes('email')) {
+        this.currentQuestion = 'ACQUIRE_EMAIL';
+        return { nextQuestion: 'ACQUIRE_EMAIL' };
+      }
+      if (correction.includes('phone')) {
+        this.currentQuestion = 'ACQUIRE_PHONE';
+        return { nextQuestion: 'ACQUIRE_PHONE' };
+      }
+      // Default to name if unclear
+      this.currentQuestion = 'ACQUIRE_NAME';
+      return { nextQuestion: 'ACQUIRE_NAME' };
+    }
+
+    // Handle contact confirmed - route to scheduling if needed
+    if (question.id === 'CONTACT_CONFIRMED') {
+      if (this.needsScheduling) {
+        this.currentQuestion = 'SCHEDULE_CALL_PROPOSE';
+        return { nextQuestion: 'SCHEDULE_CALL_PROPOSE' };
+      }
+      this.currentQuestion = 'END';
+      return { nextQuestion: 'END' };
+    }
+
+    // Log meeting when confirmed
+    if (question.id === 'SCHEDULE_CALL_CONFIRMED') {
+      console.log('Meeting scheduled:', {
+        userEmail: this.contactInfo.email,
+        userName: this.contactInfo.name,
+        userCompany: this.contactInfo.company,
+        userPhone: this.contactInfo.phone,
+        dateTime: this.scheduledTime,
+        adminEmail: 'admin@greenofficevillas.com'
+      });
+    }
+
     // Handle special conditional logic for Q7
     if (question.id === 'Q7') {
       this.conditionalQuestions = [];
 
-      // Handle both array format (from new multi-select) and string format (legacy)
       let selectedIndices: number[] = [];
       if (Array.isArray(answer)) {
         selectedIndices = answer;
       } else if (typeof answer === 'string') {
-        // Handle comma-separated string format
         selectedIndices = answer.split(',').map(Number).filter(n => !isNaN(n));
       } else if (typeof answer === 'number') {
         selectedIndices = [answer];
       }
 
-      if (selectedIndices.includes(0)) this.conditionalQuestions.push('Q8'); // Team-building
-      if (selectedIndices.includes(1)) this.conditionalQuestions.push('Q9'); // Work-output
-      if (selectedIndices.includes(2)) this.conditionalQuestions.push('Q10'); // Relaxation-celebration
+      if (selectedIndices.includes(0)) this.conditionalQuestions.push('Q8');
+      if (selectedIndices.includes(1)) this.conditionalQuestions.push('Q9');
+      if (selectedIndices.includes(2)) this.conditionalQuestions.push('Q10');
 
       if (this.conditionalQuestions.length > 0) {
         this.currentQuestion = this.conditionalQuestions[0];
@@ -445,13 +764,11 @@ export class SimpleChatbot {
 
     // Handle conditional question completion
     if (['Q8_COMPLETE', 'Q9_COMPLETE', 'Q10_COMPLETE'].includes(question.next(answer))) {
-      // Remove completed question from conditional list
       const currentIndex = this.conditionalQuestions.indexOf(question.id);
       if (currentIndex !== -1) {
         this.conditionalQuestions.splice(currentIndex, 1);
       }
-      
-      // Move to next conditional question or Q11
+
       if (this.conditionalQuestions.length > 0) {
         this.currentQuestion = this.conditionalQuestions[0];
         return { nextQuestion: this.conditionalQuestions[0] };
@@ -461,37 +778,25 @@ export class SimpleChatbot {
       }
     }
 
-    // Get next question
+    // Get next question and optional response message
     const nextQuestionId = question.next(answer);
-    
-    // Handle special ending cases - redirect to lead capture flow
-    if (nextQuestionId === 'PLANNER_LEAD_CAPTURE') {
-      this.currentQuestion = 'LEAD_INTRO_CALL';
-      return { nextQuestion: 'LEAD_INTRO_CALL' };
-    }
+    let responseMessage: string | undefined;
 
-    if (nextQuestionId === 'PLANNER_PROSPECT_CAPTURE') {
-      this.currentQuestion = 'LEAD_INTRO_CALL';
-      return { nextQuestion: 'LEAD_INTRO_CALL' };
-    }
-
-    if (nextQuestionId === 'ACTUAL_RETREAT_LEAD_CAPTURE') {
-      this.currentQuestion = 'LEAD_INTRO_CALL';
-      return { nextQuestion: 'LEAD_INTRO_CALL' };
-    }
-
-    if (nextQuestionId === 'ACTUAL_RETREAT_PROSPECT_CAPTURE') {
-      this.currentQuestion = 'LEAD_INTRO_CALL';
-      return { nextQuestion: 'LEAD_INTRO_CALL' };
+    // Check if question has a response message function
+    if (question.responseMessage) {
+      const msg = question.responseMessage(answer);
+      if (msg) {
+        responseMessage = msg;
+      }
     }
 
     // Handle conversation end
     if (nextQuestionId === 'END') {
-      return { nextQuestion: 'END' };
+      return { nextQuestion: 'END', response: responseMessage };
     }
 
     this.currentQuestion = nextQuestionId;
-    return { nextQuestion: nextQuestionId };
+    return { nextQuestion: nextQuestionId, response: responseMessage };
   }
 
   getUserResponses(): Record<string, any> {
@@ -532,6 +837,6 @@ export class SimpleChatbot {
   }
 
   getInitialGreeting(): string {
-    return "Welcome! I'll ask a series of questions to help you explore whether Green Office is a fit. At any time, you may pause this series of questions by asking any question on your mind (using the 'Ask your own question' option).";
+    return "Welcome! I have some questions to explore whether Green Office is a fit for you. You may pause my questioning by asking your own question (by clicking the last option presented on each question)";
   }
 }

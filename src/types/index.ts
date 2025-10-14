@@ -67,6 +67,7 @@ export interface Question {
   optionType?: OptionType; // Explicit option behavior definition
   inputType?: InputType;   // For CUSTOM_RESPONSE options
   next: (answer: any) => string;
+  responseMessage?: (answer: any) => string; // Optional response message function for validation feedback
   validation?: {
     min?: number;
     max?: number;

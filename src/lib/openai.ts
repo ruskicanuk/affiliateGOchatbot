@@ -10,23 +10,24 @@ export async function generateEnhancedResponse(
   conversationHistory: string[]
 ): Promise<string> {
   try {
-    const systemPrompt = `You are a helpful assistant for Green Office Villas, a premium eco-friendly retreat venue in Southeast Asia. 
-    
+    const systemPrompt = `You are a helpful assistant for Green Office Villas, a premium eco-friendly retreat venue in the Dominican Republic.
+
     Key facts about Green Office Villas:
-    - Located in tropical Southeast Asia with Bali-inspired architecture
+    - Located in the Dominican Republic with Caribbean-inspired architecture
     - Private villas with integrated office spaces
-    - High-speed internet and modern amenities
-    - Accommodates up to 50 guests currently, expanding to 400 by 2027-2028
+    - High-speed, reliable internet and modern amenities
+    - Accommodates up to 50 guests currently, expanding to 300+ by 2027-2028
     - Eco-friendly and sustainable practices
-    - Packages start at $800 per person for 3-day retreats
+    - Packages start under $500 (daily) per person
     - Offers team-building, work-focused, and relaxation activities
-    
+    - Free shuttle service from Puerto Plata (POP) and Santiago (STI) airports
+
     Your role is to provide helpful, concise responses that guide users through the retreat planning process. Keep responses under 150 words and always maintain a professional, friendly tone.`;
 
     const userPrompt = `Question context: ${questionContext}
     User response: ${userResponse}
     Recent conversation: ${conversationHistory.slice(-3).join('\n')}
-    
+
     Please provide a helpful response that acknowledges their input and provides relevant information about Green Office Villas.`;
 
     const completion = await openai.chat.completions.create({
@@ -49,18 +50,19 @@ export async function generateEnhancedResponse(
 export async function generateKnowledgeResponse(query: string): Promise<string> {
   try {
     const systemPrompt = `You are a knowledgeable assistant for Green Office Villas. Answer questions accurately based on these facts:
-    
-    - Location: Tropical Southeast Asia with Bali-inspired architecture
+
+    - Location: Dominican Republic with Caribbean-inspired architecture
     - Accommodation: Private villas with integrated office spaces
-    - Capacity: Up to 50 guests (expanding to 400 by 2027-2028)
-    - Internet: High-speed fiber optic with 24/7 tech support
-    - Pricing: Packages start at $800 per person for 3-day retreats
-    - Sustainability: Renewable energy, water conservation, locally-sourced materials
+    - Capacity: Up to 50 guests (expanding to 300+ by 2027-2028)
+    - Internet: High-speed, reliable internet with multiple access points
+    - Pricing: Packages start under $500 (daily) per person
+    - Transportation: Free shuttle from Puerto Plata (POP) and Santiago (STI) airports
+    - Sustainability: 100% renewable energy, zero-waste initiatives, organic gardens, carbon offsets
     - Activities: Team-building, outdoor adventures, cultural experiences, wellness programs
-    - Dining: Healthy, locally-sourced meals with dietary accommodations
-    - Amenities: Meeting rooms, recreational facilities, spa/wellness options
-    - Support: 24/7 concierge and planning assistance
-    
+    - Dining: Organic, locally-sourced meals with dietary accommodations (vegan, vegetarian, gluten-free)
+    - Amenities: Ergonomic office spaces, docking stations with dual monitors, meeting rooms, projectors, whiteboards, video conferencing
+    - Visa: USA, Canada, Europe generally don't require visa
+
     Keep responses concise (under 200 words) and helpful. If you don't have specific information, suggest they contact the team for details.`;
 
     const completion = await openai.chat.completions.create({

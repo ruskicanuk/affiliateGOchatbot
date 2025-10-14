@@ -11,7 +11,6 @@ The chatbot uses a **single chat window design** with the following features:
 2. **Selected Option Highlighting**: When a user clicks an option, it appears as a green highlighted user message
 3. **Persistent Custom Question Input**: Always-available input field at the bottom for custom questions
 4. **Smooth Animations**: All interactions include smooth transitions and visual feedback
-5. **Form Link**: Below the single chat window, a link to another page which says "I prefer to learn more about Green Office from a human".  The page is a form that asks for their first (required) and last (required) name, their email (required), their phone number (optional), Retreats per year (Integer, optional) and Attendees per retreat (Integer, optional).
 
 ### Hybrid Response Handling
 
@@ -29,7 +28,7 @@ The chatbot uses a **single chat window design** with the following features:
 ## Initial Greeting
 
 **Bot Message:**
-"Welcome! I'll ask a series of questions to help you explore whether Green Office is a fit.  At any time, you may pause this series of questions by asking any question on your mind (entering it at the bottom of this chat window)"
+"Welcome! I have some questions to explore whether Green Office is a fit for you.  You may pause my questioning by asking your own question (by clicking the last option presented on each question)"
 
 ## Question Flow Structure
 
@@ -37,28 +36,28 @@ The chatbot uses a **single chat window design** with the following features:
 **Question:** "What best describes your role?"
 
 **Options:**
-- Option 1: Our clients engage me (or my company) to help facilitate retreats in some manner (e.g., planner/platform/consultants) → **Go to Q2**
-- Option 2: We are looking at options for an upcoming team retreat (eg. I am a team leader, team assistant, etc) → **Go to Q3**
+- Option 1: Retreat Facilitator.  Our clients engage me (or my company) to help facilitate retreats in some manner (ie. as a planner, consultant or to use our platform) → **Go to Q2**
+- Option 2: Team Member/Leader.  Our team is looking at options for an upcoming team retreat (ie. as a team leader or member) → **Go to Q3**
 
-**Note:** Users can ask custom questions anytime using the persistent input field at the bottom of the chat, or click one of the provided options to continue the guided flow.
+**Note:** Users can ask user-directed questions anytime using the persistent input option at the bottom of each list of response options, or click one of the provided response options to continue the guided flow.
 
 ---
 
 ## Branch A: Planner Path (Q1 → Q2)
 
 ### Q2: Planner Interest Type
-**Question:** "We may be a great fit! Green Office is purpose-built to help retreat planners/platforms/consultants offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?"
+**Question:** "We may be a great fit! Green Office is purpose-built to help retreat facilitators (planners/platforms/consultants) offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?"
 
 **Options:**
-- Option 1: I am planning an upcoming retreat for a client — curious if Green Office is a fit → **Go to Q2.1**
-- Option 2: Exploring potential venues for our platform or portfolio → **Go to Q2.2.1**
+- Option 1: Exploring potential venues for our platform or portfolio → **Go to Q2.2.1**
+- Option 2: I am planning a specific upcoming retreat for a client — curious if Green Office is a fit for it → **Go to Q2.1**
 
 ### Q2.1: Client Retreat Planning
-**Question:** "Perfect, let's sketch out the retreat plan"
+**Question:** "Great, let's dig into your upcoming retreat to see if it is a fit"
 **Path:** Skip to Q3 and follow the flow from there
 
 ### Q2.2.1: Venue Scouting
-**Question:** "Interesting, Green Office might help differentiate your platform verus the competition.  I feel we may want to escalate your interest to a meeting with our leadership team to explore partnership models.  How many retreats are organized by your company or through your platform per year?"
+**Question:** "Perfect.  Green Office is designed to help differentiate your platform verus the competition.  I feel we may want to escalate your interest to a meeting with our leadership team to explore partnership models.  How many retreats are organized by your company or through your platform per year?"
 
 **Options:**
 - Option 1: Fewer than 10 **Go to Q2.2.2**
@@ -70,17 +69,17 @@ The chatbot uses a **single chat window design** with the following features:
 **Question:** "What best describes the scale of average retreat organized by your company or through your platform?"
 
 **Options:**
-- Option 1: Consistently small (less than 20 per retreat on average) with little variation
-- Option 2: Small (less than 20 per retreat on average) but ranges widely
-- Option 3: Consistently moderate (20-50 per retreat on average) with little variation
-- Option 4: Moderate (20-50 per retreat on average) but ranges widely
-- Option 5: Consistently large (over 50 per retreat on average) with little variation
-- Option 6: Large (over 50 per retreat on average) but ranges widely
+- Option 1: Consistently small (less than 20 per retreat on average) with little variation in size
+- Option 2: Variably small (less than 20 per retreat on average) with lots of variation in size
+- Option 3: Consistently moderate (20-50 per retreat on average) with little variation in size
+- Option 4: Variably moderate (20-50 per retreat on average) with lots of variation in size
+- Option 5: Consistently large (over 50 per retreat on average) with little variation in size
+- Option 6: Variably large (over 50 per retreat on average) with lots of variation in size
 
 **Validation & Responses:**
-- Option 1-4: "Green Office is purpose-built for retreats of that scale." → **Continue to Q2.2.3**
+- Option 1-4: "Green Office is purpose-built for retreats of that size." → **Continue to Q2.2.3**
 - Option 5: "We are expanding capacity to serve companies of your scale in 2027-2028; I can keep you updated if you provide me your email" → **Planner Lead Capture**
-- Option 6: "We are expanding capacity to serve companies of your scale in 2027-2028;  However, since you said your retreat size is wide-ranging, I'll bet we can accomodate some of the smaller retreats.  Our current capacity is 50 attenddees though we are planning to expand to 300+ in 2027-2028" → **Continue to Q2.2.3**
+- Option 6: "We are expanding capacity to serve companies of your scale in 2027-2028;  However, since you said your retreat size is wide-ranging, I'll bet we can accomodate some of the smaller retreats.  Our current capacity is 50 attendees though we are planning to expand to 300+ in 2027-2028" → **Continue to Q2.2.3**
 
 ### Q2.2.3: The Platform's Retreat Planning Role
 **Question:** "What is your involvement in organizing the retreats initiated on your platform?"
@@ -99,10 +98,10 @@ If **Yes** -> Jump to **Acquire Contact Information** followed by **Schedule Cal
 If **No** -> Jump to **Green Office Update Options** followed by **Acquire Contact Information**
 
 **Acquire Contact Information**
-Ask for their name, company, email and phone.  Chat back and forth until information is acquired.  Present it back for user confirmation.  Once confirmed, move on either to schedule call or end the conversation.
+Ask for their name then company then email then phone.  Chat back and forth until information is acquired and deemed accurate.  Present it back for user confirmation.  Once confirmed, move on either to schedule call (if they answered Yes to scheduling) or end the conversation (if they said no to scheduling a call).
 
 **Schedule Call with Green Office**
-Propose a few dates.  Chat back and forth until a good time is confirmed.  Present it back to the user for confirmation.  Once confirmed, send them and admin@greenofficevillas.com an outlook meeting invite and close the conversation. 
+Propose a few date options (single-click options).  Include a Custom-response option "Propose a different date and time".  Chat back and forth until a good time is confirmed.  Present it back to the user for confirmation.  Once confirmed, send them and admin@greenofficevillas.com an outlook meeting invite and close the conversation. 
 
 **Green Office Update Options**
 "How do you prefer to stay updated?"
@@ -119,7 +118,7 @@ ie. Option 1: Green Office will contact you when we bookings are available and y
 ie. Option 2: Green Office will contact you in [user selected] months by email
 ie. Option 3: Green Office will contact you in [user selected] months by phone 
 ie. Option 4: Green Office will keep you up to date with project updates
-
+- Option 5: All good, you know where to find us if you see a change in fit potential! **End Chat**
 ---
 
 ## Branch B: Actual Retreat Path, Determining Fit (Q1 → Q3)
@@ -353,11 +352,12 @@ After they answer Q25, go to **Actual Retreat Prospect Capture**
 ## Flow Convergence/Ending
 
 **Final Message:**
-All chat sessions should end in one of the four: (with the flow for each defined in the relevant section above)
+All chat sessions should end in one of the five: (with the flow for each defined in the relevant section above)
 **Planner Lead Capture**
 **Planner Prospect Capture**
 **Actual Retreat Lead Capture**
 **Actual Retreat Prospect Capture**
+**End Chat**
 
 ## Flow Management Rules
 
