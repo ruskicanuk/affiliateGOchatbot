@@ -1,16 +1,15 @@
-// Core chatbot logic in single file for POC
+// Core chatbot logic rebuilt to match CHATBOT_FLOW_DOCUMENTATION.md
 import { Question } from '@/types';
 
-
-// Week 1: Q1-Q10 implementation (core qualification questions)
+// Complete question flow implementation based on documentation
 export const QUESTIONS: Record<string, Question> = {
   Q1: {
     id: 'Q1',
     text: "What best describes your role?",
     type: 'multiple_choice',
     options: [
-      "My clients are companies that engage me (or my company) to help them organize retreats (e.g., retreat planner/agency)",
-      "We are not retreat planners by profession but are in the midst of organizing a team retreat (e.g., internal team lead)"
+      "Our clients engage me (or my company) to help facilitate retreats in some manner (e.g., planner/platform/consultants)",
+      "We are looking at options for an upcoming team retreat (eg. I am a team leader, team assistant, etc)"
     ],
     next: (answer: number) => {
       if (answer === 0) return 'Q2';
@@ -19,571 +18,349 @@ export const QUESTIONS: Record<string, Question> = {
     }
   },
 
+  // Branch A: Planner Path (Q1 → Q2)
   Q2: {
     id: 'Q2',
-    text: "We may be a great fit! Green Office Villas is built to help planners offer clients tailor-made retreats. What best describes your interest?",
+    text: "We may be a great fit! Green Office is purpose-built to help retreat planners/platforms/consultants offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?",
     type: 'multiple_choice',
     options: [
-      "I am planning a retreat for a client—curious if Green Office is a fit",
-      "Scouting venues for our platform/portfolio",
-      "Interested in partnerships (e.g., affiliates)"
+      "I am planning an upcoming retreat for a client — curious if Green Office is a fit",
+      "Exploring potential venues for our platform or portfolio"
     ],
     next: (answer: number) => {
       if (answer === 0) return 'Q2_1';
-      if (answer === 1) return 'Q2_2';
-      if (answer === 2) return 'Q2_3';
+      if (answer === 1) return 'Q2_2_1';
       return 'Q2';
     }
   },
 
   Q2_1: {
     id: 'Q2_1',
-    text: "Let's dive into your client's retreat. How many attendees?",
-    type: 'number',
+    text: "Perfect, let's sketch out the retreat plan",
+    type: 'multiple_choice',
+    options: ["Continue to retreat planning"],
+    next: (answer: number) => 'Q3' // Skip to Q3 and follow the flow from there
+  },
+
+  Q2_2_1: {
+    id: 'Q2_2_1',
+    text: "Interesting, Green Office might help differentiate your platform versus the competition. I feel we may want to escalate your interest to a meeting with our leadership team to explore partnership models. How many retreats are organized by your company or through your platform per year?",
+    type: 'multiple_choice',
+    options: [
+      "Fewer than 10",
+      "10 to 100", 
+      "100 to 1,000",
+      "1,000+"
+    ],
+    next: (answer: number) => 'Q2_2_2'
+  },
+
+  Q2_2_2: {
+    id: 'Q2_2_2',
+    text: "What best describes the scale of average retreat organized by your company or through your platform?",
+    type: 'multiple_choice',
+    options: [
+      "Consistently small (less than 20 per retreat on average) with little variation",
+      "Small (less than 20 per retreat on average) but ranges widely",
+      "Consistently moderate (20-50 per retreat on average) with little variation", 
+      "Moderate (20-50 per retreat on average) but ranges widely",
+      "Consistently large (over 50 per retreat on average) with little variation",
+      "Large (over 50 per retreat on average) but ranges widely"
+    ],
     next: (answer: number) => {
-      if (answer >= 1 && answer <= 50) return 'Q4';
-      if (answer >= 51 && answer <= 400) return 'LEAD_CAPTURE_WAITLIST';
-      if (answer > 400) return 'LEAD_CAPTURE_TOO_LARGE';
-      return 'Q2_1'; // Invalid input
+      if (answer >= 0 && answer <= 3) return 'Q2_2_3'; // Options 1-4
+      if (answer === 4) return 'PLANNER_LEAD_CAPTURE'; // Option 5
+      if (answer === 5) return 'Q2_2_3'; // Option 6
+      return 'Q2_2_2';
     }
   },
 
+  Q2_2_3: {
+    id: 'Q2_2_3',
+    text: "What is your involvement in organizing the retreats initiated on your platform?",
+    type: 'multiple_choice',
+    options: [
+      "Negligible, we are purely a platform used by 3rd party planners and corporate clients to identify potential retreat venues",
+      "Limited, most of our clients manage the retreat themselves (via a retreat planner or themselves) though some engage us on aspects of the retreat planning",
+      "Moderate, we manage a mix of retreat planning services depending on the client",
+      "Active, most of our clients use us to fully manage the retreat end to end"
+    ],
+    next: (answer: number) => 'PLANNER_PROSPECT_CAPTURE'
+  },
+
+  // Branch B: Actual Retreat Path, Determining Fit (Q1 → Q3)
   Q3: {
     id: 'Q3',
-    text: "Let's check fit. How many attendees?",
+    text: "Great, I have three critical questions to see if Green Office is a possible fit based on the number (estimated or actual) of retreat attendees, the (approximate or actual) retreat date and its estimated duration. Don't worry about perfect detail accuracy quite yet - let's see if we are in the approximate zone. How many attendees do you expect?",
     type: 'number',
+    validation: { min: 0, required: true },
     next: (answer: number) => {
-      if (answer >= 1 && answer <= 50) return 'Q4';
-      if (answer >= 51 && answer <= 400) return 'LEAD_CAPTURE_WAITLIST';
-      if (answer > 400) return 'LEAD_CAPTURE_TOO_LARGE';
-      return 'Q3'; // Invalid input
+      if (answer >= 2 && answer <= 50) return 'Q4';
+      if (answer === 1) return 'ACTUAL_RETREAT_LEAD_CAPTURE';
+      if (answer > 50) return 'ACTUAL_RETREAT_LEAD_CAPTURE';
+      if (answer === 0) return 'ACTUAL_RETREAT_LEAD_CAPTURE';
+      return 'Q3'; // Invalid input - repeat question
     }
   },
 
   Q4: {
     id: 'Q4',
-    text: "Primary retreat goals?",
-    type: 'multiple_choice',
-    options: [
-      "Team-building",
-      "Work-focused",
-      "Both",
-      "Relaxation"
-    ],
-    next: (answer: number) => {
-      if (answer === 0) return 'Q5';
-      if (answer === 1) return 'Q6';
-      if (answer === 2) return 'Q5'; // Both - start with team building
-      if (answer === 3) return 'Q7';
-      return 'Q4';
+    text: "What approximate date do you aim to start the retreat on?",
+    type: 'date',
+    validation: { required: true },
+    next: (answer: string) => {
+      const inputDate = new Date(answer);
+      const cutoffDate = new Date('2026-11-01');
+      if (inputDate < cutoffDate) return 'ACTUAL_RETREAT_LEAD_CAPTURE';
+      return 'Q5';
     }
   },
 
   Q5: {
-    id: 'Q5',
-    text: "What team-building activities interest you most?",
-    type: 'multiple_choice',
-    options: [
-      "Outdoor adventures",
-      "Creative workshops",
-      "Cultural experiences",
-      "Wellness activities"
-    ],
+    id: 'Q5', 
+    text: "Approximately, how many days long do you expect the retreat to run?",
+    type: 'number',
+    validation: { min: 1, required: true },
     next: (answer: number) => {
-      return 'Q8'; // Continue to timeline question
+      if (answer >= 3 && answer <= 120) return 'Q6';
+      return 'ACTUAL_RETREAT_PROSPECT_CAPTURE'; // Any other value
     }
   },
 
   Q6: {
     id: 'Q6',
-    text: "What work-focused activities are priorities?",
+    text: "Since Green Office is a good fit for your team, we could wrap up this chat with next steps or, if you prefer, I have a longer list of detailed retreat planning questions. If you have the time, the detailed retreat questions will allow our team to better prepare for our follow up meeting and should make that meeting sail by faster. The questions may also help you think through the retreat planning details. Let me know which you prefer?",
     type: 'multiple_choice',
     options: [
-      "Strategic planning sessions",
-      "Skills training workshops",
-      "Project collaboration",
-      "Leadership development",
-      "Let me ask a question"
+      "Let's wrap up this chat with next steps (1-2 minutes)",
+      "Let's get into the detailed retreat planning questions (4-5 minutes)"
     ],
     next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q8'; // Continue to timeline question
+      if (answer === 0) return 'ACTUAL_RETREAT_PROSPECT_CAPTURE';
+      if (answer === 1) return 'Q7';
+      return 'Q6';
     }
   },
 
   Q7: {
     id: 'Q7',
-    text: "What relaxation elements are most important?",
-    type: 'multiple_choice',
+    text: "Great! Let's get into it - I have 18 questions for you which should take 4 - 5 minutes. What are Primary retreat goals? (you may select more than 1)",
+    type: 'multiple_choice_multi_select',
     options: [
-      "Spa and wellness",
-      "Nature and outdoor spaces",
-      "Flexible schedule",
-      "Recreational activities",
-      "Let me ask a question"
+      "Team-building",
+      "Work-output", 
+      "Relaxation-celebration"
     ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q8'; // Continue to timeline question
+    next: (answer: number[]) => {
+      // This will be handled by conditional logic in the chatbot class
+      return 'Q8_Q9_Q10_CONDITIONAL';
     }
   },
 
   Q8: {
     id: 'Q8',
-    text: "When are you looking to hold this retreat?",
-    type: 'multiple_choice',
+    text: "Which team-building activities resonate?",
+    type: 'multiple_choice_multi_select',
     options: [
-      "Within 3 months",
-      "3-6 months",
-      "6-12 months",
-      "More than 12 months",
-      "Let me ask a question"
+      "Thermal Spa",
+      "Challenge Games",
+      "Horseback Riding",
+      "Kitesurfing",
+      "Team Games"
     ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q9';
-    }
+    next: (answer: number[]) => 'Q8_COMPLETE'
   },
 
   Q9: {
     id: 'Q9',
-    text: "What's your approximate budget per person?",
-    type: 'multiple_choice',
+    text: "What sort of work output do you hope to achieve?",
+    type: 'multiple_choice_multi_select',
     options: [
-      "Under $500",
-      "$500-$1000",
-      "$1000-$2000",
-      "Over $2000",
-      "Let me ask a question"
+      "Strategic Planning",
+      "Build a Product",
+      "Maintain Normal Work Output while at the Retreat"
     ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q10';
-    }
+    next: (answer: number[]) => 'Q9_COMPLETE'
   },
 
   Q10: {
     id: 'Q10',
-    text: "How important is sustainability/eco-friendliness for your retreat?",
-    type: 'multiple_choice',
+    text: "What relaxation-celebration activities resonate?",
+    type: 'multiple_choice_multi_select',
     options: [
-      "Very important - it's a key requirement",
-      "Somewhat important - nice to have",
-      "Not a priority",
-      "Let me ask a question"
+      "Thermal Spa",
+      "Running/Walking along the beach",
+      "Horseback Riding along the beach",
+      "Kitesurfing",
+      "Pool/Swimming",
+      "Networking/Socializing",
+      "Stargazing",
+      "Sun Tanning"
     ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q11';
-    }
+    next: (answer: number[]) => 'Q10_COMPLETE'
   },
 
   Q11: {
     id: 'Q11',
-    text: "What's your role in the decision-making process?",
-    type: 'multiple_choice',
+    text: "Transportation needs?",
+    type: 'multiple_choice_multi_select',
     options: [
-      "I make the final decision",
-      "I influence the decision",
-      "I'm researching options for someone else",
-      "Let me ask a question"
+      "Would prefer Green Office manages all transportation to/from the Airport",
+      "Would prefer to manage all transportation to/from the Airport ourselves (eg. car rental, taxi, etc)"
     ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q12';
-    }
+    next: (answer: number[]) => 'Q12'
   },
 
   Q12: {
     id: 'Q12',
-    text: "What's your company size?",
-    type: 'multiple_choice',
+    text: "Accommodation preferences?",
+    type: 'multiple_choice_multi_select',
     options: [
-      "Under 50 employees",
-      "50-500 employees",
-      "Over 500 employees",
-      "Let me ask a question"
+      "Attendees may share rooms (separate beds) - lowest cost option",
+      "Attendees may share villas (separate rooms)",
+      "Attendees each have a private villas (maximum privacy)"
     ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q13';
-    }
+    next: (answer: number[]) => 'Q13'
   },
 
   Q13: {
     id: 'Q13',
-    text: "How long would you like the retreat to be?",
-    type: 'multiple_choice',
+    text: "Any pets or family inclusions?",
+    type: 'multiple_choice_multi_select',
     options: [
-      "1-2 days",
-      "3-4 days",
-      "5-7 days",
-      "More than a week",
-      "Let me ask a question"
+      "Pets",
+      "Family (not participating in the retreat)"
     ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q14';
-    }
+    next: (answer: number[]) => 'Q14'
   },
 
   Q14: {
     id: 'Q14',
-    text: "What's most important for your team's work setup?",
-    type: 'multiple_choice',
+    text: "Meal preferences?",
+    type: 'multiple_choice_multi_select',
     options: [
-      "High-speed internet and tech support",
-      "Quiet, focused work environments",
-      "Collaborative spaces for group work",
-      "Flexible indoor/outdoor options",
-      "Let me ask a question"
+      "Eat at Green Office Restaurants (GO-restaurant)",
+      "Eat in your Villa with Green Office supplying the food and cooking per your schedule (GO-cook)",
+      "Eat in your villa with Green Office supplying the food and you cooking the food (self-cook)",
+      "Eat in your villa with you supplying your own food and cooking (self-all)"
     ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q15';
-    }
+    next: (answer: number[]) => 'Q15'
   },
 
   Q15: {
     id: 'Q15',
-    text: "Does your team work remotely, in-office, or hybrid?",
-    type: 'multiple_choice',
+    text: "Select which workspace requirements you have for the retreat?",
+    type: 'multiple_choice_multi_select',
     options: [
-      "Fully remote",
-      "Hybrid (mix of remote and office)",
-      "Primarily in-office",
-      "Let me ask a question"
+      "Reliable, high-speed internet",
+      "High quality office space (ergonomic chair/desk, plug-in ready docking station, dual monitor, keyboard, mouse, etc)",
+      "Plug-in ready Projectors/whiteboard team working spaces",
+      "360 degree ocean view board-room for larger group meetings"
     ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q16';
-    }
+    next: (answer: number[]) => 'Q16'
   },
 
   Q16: {
     id: 'Q16',
-    text: "Any special dietary requirements or preferences?",
+    text: "What is your company's Overall size?",
     type: 'multiple_choice',
     options: [
-      "Vegetarian/Vegan options needed",
-      "Gluten-free options needed",
-      "No special requirements",
-      "Multiple dietary needs",
-      "Let me ask a question"
+      "<50 employees",
+      "50-500",
+      ">500",
+      "Unsure"
     ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q17';
-    }
+    next: (answer: number) => 'Q17'
   },
 
   Q17: {
     id: 'Q17',
     text: "What industry is your company in?",
     type: 'text',
-    next: (answer: string) => {
-      return 'Q18';
-    }
+    next: (answer: string) => 'Q18'
   },
 
   Q18: {
     id: 'Q18',
-    text: "Have you organized team retreats before?",
-    type: 'multiple_choice',
-    options: [
-      "Yes, multiple times",
-      "Yes, once or twice",
-      "No, this is our first",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q19';
-    }
+    text: "What is a line or two description of the role the team (attending the retreat) plays in the company?",
+    type: 'text',
+    next: (answer: string) => 'Q19'
   },
 
   Q19: {
     id: 'Q19',
-    text: "What's your preferred retreat location type?",
-    type: 'multiple_choice',
-    options: [
-      "Tropical/beach setting",
-      "Mountain/nature setting",
-      "Urban/city setting",
-      "No preference",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q20';
-    }
+    text: "What is your team's current hybrid work model? Please include details such as quarterly work-from-office weeks, days-per-week in office, etc",
+    type: 'text',
+    next: (answer: string) => 'Q20'
   },
 
   Q20: {
     id: 'Q20',
-    text: "How important is having recreational activities available?",
+    text: "Where do you typically hold your team retreats?",
     type: 'multiple_choice',
     options: [
-      "Very important - key for team bonding",
-      "Somewhat important - nice to have",
-      "Not important - focus on work",
-      "Let me ask a question"
+      "Company Office",
+      "Urban environment (Away from the office)",
+      "Natural environment (Away from the office)",
+      "Other"
     ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q21';
-    }
+    next: (answer: number) => 'Q21'
   },
 
   Q21: {
     id: 'Q21',
-    text: "What's your team's age demographic?",
-    type: 'multiple_choice',
-    options: [
-      "Mostly younger (20s-30s)",
-      "Mixed ages",
-      "Mostly experienced (40s+)",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q22';
-    }
+    text: "Describe the different types of retreats/team events you hold and how frequently you hold them",
+    type: 'text',
+    next: (answer: string) => 'Q22'
   },
 
   Q22: {
     id: 'Q22',
-    text: "Do you need meeting rooms for presentations or workshops?",
+    text: "Your role on the team (or in the company)?",
     type: 'multiple_choice',
     options: [
-      "Yes, essential for our agenda",
-      "Yes, would be helpful",
-      "No, informal spaces are fine",
-      "Let me ask a question"
+      "Retreat Consultant/Planner",
+      "Team Leader",
+      "Team Assistant",
+      "Senior Executive",
+      "Other"
     ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q23';
-    }
+    next: (answer: number) => 'Q23'
   },
 
   Q23: {
     id: 'Q23',
-    text: "How flexible are your dates?",
+    text: "How did you first learn about Green Office?",
     type: 'multiple_choice',
     options: [
-      "Very flexible - can adjust as needed",
-      "Somewhat flexible - prefer certain months",
-      "Fixed dates - specific timeframe required",
-      "Let me ask a question"
+      "LinkedIn",
+      "Online Search",
+      "Word of Mouth / Referral",
+      "Conference",
+      "Other"
     ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q24';
-    }
+    next: (answer: number) => 'Q24'
   },
 
   Q24: {
     id: 'Q24',
-    text: "What's the primary outcome you want from this retreat?",
-    type: 'multiple_choice',
-    options: [
-      "Improved team communication and collaboration",
-      "Strategic planning and goal setting",
-      "Team bonding and morale boost",
-      "Skills development and training",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q25';
-    }
+    text: "By what date do you need to firm up your retreat decision?",
+    type: 'date',
+    next: (answer: string) => 'Q25'
   },
 
   Q25: {
     id: 'Q25',
-    text: "How important is privacy for your group?",
-    type: 'multiple_choice',
-    options: [
-      "Very important - need exclusive access",
-      "Somewhat important - prefer minimal other groups",
-      "Not important - comfortable sharing space",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q26';
-    }
-  },
-
-  Q26: {
-    id: 'Q26',
-    text: "Do you need transportation assistance?",
-    type: 'multiple_choice',
-    options: [
-      "Yes, airport transfers needed",
-      "Yes, local transportation needed",
-      "No, we'll handle our own transport",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q27';
-    }
-  },
-
-  Q27: {
-    id: 'Q27',
-    text: "What's your experience level with international travel for business?",
-    type: 'multiple_choice',
-    options: [
-      "Very experienced - travel internationally regularly",
-      "Some experience - occasional international trips",
-      "Limited experience - mostly domestic travel",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q28';
-    }
-  },
-
-  Q28: {
-    id: 'Q28',
-    text: "How important is having 24/7 support during your stay?",
-    type: 'multiple_choice',
-    options: [
-      "Very important - essential for peace of mind",
-      "Somewhat important - good to have",
-      "Not important - we're self-sufficient",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q29';
-    }
-  },
-
-  Q29: {
-    id: 'Q29',
-    text: "Would you be interested in cultural experiences or local activities?",
-    type: 'multiple_choice',
-    options: [
-      "Yes, very interested - important part of the experience",
-      "Yes, somewhat interested - if time allows",
-      "No, prefer to focus on work and team activities",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q30';
-    }
-  },
-
-  Q30: {
-    id: 'Q30',
-    text: "What's your biggest concern about organizing this retreat?",
-    type: 'multiple_choice',
-    options: [
-      "Budget and cost management",
-      "Logistics and coordination",
-      "Ensuring everyone enjoys it",
-      "Balancing work and fun",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q31';
-    }
-  },
-
-  Q31: {
-    id: 'Q31',
-    text: "How do you typically measure the success of team events?",
-    type: 'multiple_choice',
-    options: [
-      "Team feedback and satisfaction surveys",
-      "Improved collaboration after the event",
-      "Achievement of specific goals/outcomes",
-      "Overall participation and engagement",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q32';
-    }
-  },
-
-  Q32: {
-    id: 'Q32',
-    text: "Would you like assistance with planning activities and agenda?",
-    type: 'multiple_choice',
-    options: [
-      "Yes, full planning assistance needed",
-      "Yes, some guidance would be helpful",
-      "No, we prefer to plan our own agenda",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q33';
-    }
-  },
-
-  Q33: {
-    id: 'Q33',
-    text: "How important is having wellness/spa facilities available?",
-    type: 'multiple_choice',
-    options: [
-      "Very important - essential for relaxation",
-      "Somewhat important - nice to have",
-      "Not important - not a priority",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 3) return 'KNOWLEDGE_BASE';
-      return 'Q34';
-    }
-  },
-
-  Q34: {
-    id: 'Q34',
-    text: "What's your preferred communication style for planning?",
-    type: 'multiple_choice',
-    options: [
-      "Email correspondence",
-      "Phone/video calls",
-      "In-person meetings",
-      "Mix of all methods",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'Q35';
-    }
-  },
-
-  Q35: {
-    id: 'Q35',
-    text: "Finally, what's the most important factor in choosing Green Office Villas?",
-    type: 'multiple_choice',
-    options: [
-      "Unique combination of work and relaxation",
-      "Eco-friendly and sustainable practices",
-      "Professional support and service",
-      "Value for money",
-      "Let me ask a question"
-    ],
-    next: (answer: number) => {
-      if (answer === 4) return 'KNOWLEDGE_BASE';
-      return 'CONVERSATION_COMPLETE';
-    }
+    text: "Would you like us to first contact you prior to offering the space to a client lower in the queue?",
+    type: 'yes_no',
+    next: (answer: boolean) => 'ACTUAL_RETREAT_PROSPECT_CAPTURE'
   }
 };
 
 export class SimpleChatbot {
   private currentQuestion: string = 'Q1';
   private userResponses: Record<string, any> = {};
+  private conditionalQuestions: string[] = []; // Track which conditional questions to show
 
   constructor() {
     this.reset();
@@ -592,6 +369,7 @@ export class SimpleChatbot {
   reset() {
     this.currentQuestion = 'Q1';
     this.userResponses = {};
+    this.conditionalQuestions = [];
   }
 
   getCurrentQuestion(): Question | null {
@@ -605,30 +383,81 @@ export class SimpleChatbot {
     // Store the response
     this.userResponses[question.id] = answer;
 
-    // Knowledge base requests are now handled via custom question input
+    // Handle special conditional logic for Q7
+    if (question.id === 'Q7') {
+      this.conditionalQuestions = [];
+
+      // Handle both array format (from new multi-select) and string format (legacy)
+      let selectedIndices: number[] = [];
+      if (Array.isArray(answer)) {
+        selectedIndices = answer;
+      } else if (typeof answer === 'string') {
+        // Handle comma-separated string format
+        selectedIndices = answer.split(',').map(Number).filter(n => !isNaN(n));
+      } else if (typeof answer === 'number') {
+        selectedIndices = [answer];
+      }
+
+      if (selectedIndices.includes(0)) this.conditionalQuestions.push('Q8'); // Team-building
+      if (selectedIndices.includes(1)) this.conditionalQuestions.push('Q9'); // Work-output
+      if (selectedIndices.includes(2)) this.conditionalQuestions.push('Q10'); // Relaxation-celebration
+
+      if (this.conditionalQuestions.length > 0) {
+        this.currentQuestion = this.conditionalQuestions[0];
+        return { nextQuestion: this.conditionalQuestions[0] };
+      } else {
+        this.currentQuestion = 'Q11';
+        return { nextQuestion: 'Q11' };
+      }
+    }
+
+    // Handle conditional question completion
+    if (['Q8_COMPLETE', 'Q9_COMPLETE', 'Q10_COMPLETE'].includes(question.next(answer))) {
+      // Remove completed question from conditional list
+      const currentIndex = this.conditionalQuestions.indexOf(question.id);
+      if (currentIndex !== -1) {
+        this.conditionalQuestions.splice(currentIndex, 1);
+      }
+      
+      // Move to next conditional question or Q11
+      if (this.conditionalQuestions.length > 0) {
+        this.currentQuestion = this.conditionalQuestions[0];
+        return { nextQuestion: this.conditionalQuestions[0] };
+      } else {
+        this.currentQuestion = 'Q11';
+        return { nextQuestion: 'Q11' };
+      }
+    }
 
     // Get next question
     const nextQuestionId = question.next(answer);
     
-    // Handle special cases
-    if (nextQuestionId === 'LEAD_CAPTURE_WAITLIST') {
+    // Handle special ending cases
+    if (nextQuestionId === 'PLANNER_LEAD_CAPTURE') {
       return {
         nextQuestion: 'LEAD_CAPTURE',
-        response: "We're expanding by 2027-2028 to accommodate larger groups. Would you like us to email you updates on availability?"
+        response: "Hope this interaction was helpful. I'll update our team with the summary"
       };
     }
 
-    if (nextQuestionId === 'LEAD_CAPTURE_TOO_LARGE') {
+    if (nextQuestionId === 'PLANNER_PROSPECT_CAPTURE') {
       return {
         nextQuestion: 'LEAD_CAPTURE',
-        response: "That's quite a large group! We might be able to accommodate subgroups or have alternative suggestions. Would you like to discuss options via email?"
+        response: "Hope this interaction was helpful. Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team - does that work?"
       };
     }
 
-    if (nextQuestionId === 'CONVERSATION_COMPLETE') {
+    if (nextQuestionId === 'ACTUAL_RETREAT_LEAD_CAPTURE') {
       return {
         nextQuestion: 'LEAD_CAPTURE',
-        response: "Thank you for completing our retreat planning questionnaire! Based on your responses, Green Office Villas seems like an excellent fit for your team. We'd love to discuss your specific needs and provide a customized proposal. May we have your email to send you detailed information and pricing?"
+        response: "I'll update our team with the summary of our chat. The fit today may not be perfect, but I suspect we'll want to stay in touch."
+      };
+    }
+
+    if (nextQuestionId === 'ACTUAL_RETREAT_PROSPECT_CAPTURE') {
+      return {
+        nextQuestion: 'LEAD_CAPTURE',
+        response: "Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team to get further into your retreat details - does that work?"
       };
     }
 
@@ -636,7 +465,9 @@ export class SimpleChatbot {
     return { nextQuestion: nextQuestionId };
   }
 
-
+  getUserResponses(): Record<string, any> {
+    return { ...this.userResponses };
+  }
 
   calculateQualificationScore(): number {
     let score = 0;
@@ -645,52 +476,33 @@ export class SimpleChatbot {
     if (this.userResponses.Q1 === 0 || this.userResponses.Q1 === 1) score += 20;
 
     // Group size (20 points)
-    if (this.userResponses.Q2_1 || this.userResponses.Q3) {
-      const attendees = this.userResponses.Q2_1 || this.userResponses.Q3;
+    if (this.userResponses.Q3) {
+      const attendees = this.userResponses.Q3;
       if (attendees >= 10 && attendees <= 50) score += 20;
       else if (attendees >= 5 && attendees <= 100) score += 15;
       else if (attendees >= 1) score += 10;
     }
 
-    // Timeline urgency (15 points)
-    if (this.userResponses.Q8 !== undefined) {
-      if (this.userResponses.Q8 === 0) score += 15; // Within 3 months
-      else if (this.userResponses.Q8 === 1) score += 12; // 3-6 months
-      else if (this.userResponses.Q8 === 2) score += 8; // 6-12 months
-      else score += 5; // More than 12 months
+    // Date validation (15 points)
+    if (this.userResponses.Q4) {
+      const inputDate = new Date(this.userResponses.Q4);
+      const cutoffDate = new Date('2026-11-01');
+      if (inputDate >= cutoffDate) score += 15;
     }
 
-    // Budget alignment (15 points)
-    if (this.userResponses.Q9 !== undefined) {
-      if (this.userResponses.Q9 === 1 || this.userResponses.Q9 === 2) score += 15; // $500-$2000
-      else if (this.userResponses.Q9 === 3) score += 12; // Over $2000
-      else score += 8; // Under $500
+    // Duration validation (15 points)
+    if (this.userResponses.Q5) {
+      const duration = this.userResponses.Q5;
+      if (duration >= 3 && duration <= 120) score += 15;
     }
 
-    // Decision-making authority (10 points)
-    if (this.userResponses.Q11 !== undefined) {
-      if (this.userResponses.Q11 === 0) score += 10; // Final decision maker
-      else if (this.userResponses.Q11 === 1) score += 8; // Influencer
-      else score += 5; // Researcher
-    }
-
-    // Sustainability alignment (10 points)
-    if (this.userResponses.Q10 !== undefined && this.userResponses.Q10 <= 1) score += 10;
-
-    // Company size (5 points)
-    if (this.userResponses.Q12 !== undefined && this.userResponses.Q12 >= 1) score += 5;
-
-    // Experience with retreats (5 points)
-    if (this.userResponses.Q18 !== undefined && this.userResponses.Q18 <= 1) score += 5;
+    // Detailed questions completion (30 points)
+    if (this.userResponses.Q7) score += 30;
 
     return Math.min(score, 100);
   }
 
-  getUserResponses(): Record<string, any> {
-    return { ...this.userResponses };
-  }
-
   getInitialGreeting(): string {
-    return "Welcome! I'm here to help you explore Green Office Villas, a premium eco-friendly venue for productive team retreats featuring private villas with office spaces, high-speed internet, and amenities to strengthen team culture. Let's see if it's a fit—what best describes your role?";
+    return "Welcome! I'll ask a series of questions to help you explore whether Green Office is a fit. At any time, you may pause this series of questions by asking any question on your mind (using the 'Ask your own question' option).";
   }
 }

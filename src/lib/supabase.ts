@@ -1,15 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 import { ChatSession, ChatMessage, KnowledgeQuery } from '@/types';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Check if Supabase credentials are available
+const isSupabaseConfigured = supabaseUrl && supabaseAnonKey;
+
+export const supabase = isSupabaseConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 // Database utility functions
 export const db = {
   // Chat Sessions
   async createSession(sessionId: string): Promise<ChatSession> {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+
     const { data, error } = await supabase
       .from('chat_sessions')
       .insert({
@@ -33,6 +42,10 @@ export const db = {
   },
 
   async getSession(sessionId: string): Promise<ChatSession | null> {
+    if (!supabase) {
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('chat_sessions')
       .select('*')
@@ -51,6 +64,10 @@ export const db = {
   },
 
   async updateSession(sessionId: string, updates: Partial<ChatSession>): Promise<void> {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+
     const updateData: any = {};
     if (updates.userResponses) updateData.user_responses = updates.userResponses;
     if (updates.qualificationScore !== undefined) updateData.qualification_score = updates.qualificationScore;
@@ -66,6 +83,10 @@ export const db = {
 
   // Chat Messages
   async addMessage(sessionId: string, messageType: 'user' | 'bot' | 'knowledge_base', content: string): Promise<void> {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+
     const session = await this.getSession(sessionId);
     if (!session) throw new Error('Session not found');
 
@@ -81,6 +102,10 @@ export const db = {
   },
 
   async getMessages(sessionId: string): Promise<ChatMessage[]> {
+    if (!supabase) {
+      return [];
+    }
+
     const session = await this.getSession(sessionId);
     if (!session) return [];
 
@@ -102,6 +127,10 @@ export const db = {
 
   // Knowledge Queries
   async addKnowledgeQuery(sessionId: string, queryText: string, responseProvided: string): Promise<void> {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+
     const session = await this.getSession(sessionId);
     if (!session) throw new Error('Session not found');
 
@@ -118,6 +147,10 @@ export const db = {
 
   // Admin functions
   async getAllSessions(): Promise<ChatSession[]> {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+
     const { data, error } = await supabase
       .from('chat_sessions')
       .select('*')
