@@ -30,6 +30,25 @@ export const ChatInterface: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Auto-focus custom response inputs when they're auto-expanded
+  useEffect(() => {
+    // Find the most recent message with isInputActive and CUSTOM_RESPONSE type
+    const lastActiveInput = messages
+      .slice()
+      .reverse()
+      .find(m => m.isInputActive && m.optionType === OptionType.CUSTOM_RESPONSE && !m.isCompleted);
+
+    if (lastActiveInput) {
+      // Focus the input field after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        const inputRef = inputRefs.current[lastActiveInput.id];
+        if (inputRef) {
+          inputRef.focus();
+        }
+      }, 100);
+    }
+  }, [messages]);
+
   // Initialize chat on component mount
   useEffect(() => {
     const initializeChat = async () => {
@@ -100,6 +119,10 @@ export const ChatInterface: React.FC = () => {
       if (question.inputType) {
         message.inputType = question.inputType;
       }
+      // Auto-expand custom response inputs
+      if (question.optionType === OptionType.CUSTOM_RESPONSE) {
+        message.isInputActive = true;
+      }
     } else {
       // Determine option type and configure message accordingly
       switch (question.type) {
@@ -117,6 +140,7 @@ export const ChatInterface: React.FC = () => {
           message.options = ['Enter your answer'];
           message.optionType = OptionType.CUSTOM_RESPONSE;
           message.inputType = InputType.TEXT;
+          message.isInputActive = true; // Auto-expand input field
           break;
 
         case 'number':
@@ -124,6 +148,7 @@ export const ChatInterface: React.FC = () => {
           message.options = [numberButtonText];
           message.optionType = OptionType.CUSTOM_RESPONSE;
           message.inputType = InputType.NUMBER;
+          message.isInputActive = true; // Auto-expand input field
           break;
 
         case 'date':
@@ -132,6 +157,16 @@ export const ChatInterface: React.FC = () => {
           message.options = [dateButtonText];
           message.optionType = OptionType.CUSTOM_RESPONSE;
           message.inputType = InputType.DATE;
+          message.isInputActive = true; // Auto-expand input field
+
+          // Set default date value to 6 months from today
+          const defaultDate = new Date();
+          defaultDate.setMonth(defaultDate.getMonth() + 6);
+          const defaultDateString = defaultDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+          message.inputValue = defaultDateString;
+
+          // Also set in inputValues state so it appears in the input field
+          setInputValues(prev => ({ ...prev, [message.id]: defaultDateString }));
           break;
 
         case 'yes_no':
@@ -292,11 +327,18 @@ export const ChatInterface: React.FC = () => {
 
   // User-override activation handler
   const handleUserOverrideActivation = (messageId: string) => {
-    setMessages(prev => prev.map(m =>
-      m.id === messageId
-        ? { ...m, isInputActive: true, optionType: OptionType.USER_OVERRIDE }
-        : m
-    ));
+    setMessages(prev => prev.map(m => {
+      if (m.id === messageId) {
+        // Store the original option type so we can restore it later
+        return {
+          ...m,
+          isInputActive: true,
+          optionType: OptionType.USER_OVERRIDE,
+          originalOptionType: m.originalOptionType || m.optionType // Preserve original if not already stored
+        };
+      }
+      return m;
+    }));
 
     // Focus the input field after state update
     setTimeout(() => {
@@ -405,10 +447,22 @@ export const ChatInterface: React.FC = () => {
 
       if (!isClickInsideInput && !isClickOnButton && !isClickOnInput) {
         // Revert any active input fields back to button state
-        setMessages(prev => prev.map(message => ({
-          ...message,
-          isInputActive: false
-        })));
+        setMessages(prev => prev.map(message => {
+          // If this was a user-override activation, restore the original option type
+          if (message.isInputActive && message.originalOptionType) {
+            return {
+              ...message,
+              isInputActive: false,
+              optionType: message.originalOptionType, // Restore original option type
+              originalOptionType: undefined // Clear the stored original
+            };
+          }
+          // For other input types (custom-response), just deactivate
+          return {
+            ...message,
+            isInputActive: false
+          };
+        }));
 
         // Clear input values for reverted fields
         setInputValues({});

@@ -98,6 +98,7 @@ export interface ChatInterfaceMessage {
 
   // User-override specific
   customQuestionText?: string;      // Stored custom question when submitted
+  originalOptionType?: OptionType;  // Original option type before user-override activation
 
   // Metadata
   questionId?: string;

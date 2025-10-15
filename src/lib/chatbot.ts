@@ -38,7 +38,7 @@ export const QUESTIONS: Record<string, Question> = {
     id: 'Q2_1',
     text: "Great, let's dig into your upcoming retreat to see if it is a fit",
     type: 'multiple_choice',
-    options: ["Continue"],
+    options: ["Assess fit"],
     next: () => 'Q3'
   },
 
@@ -394,7 +394,7 @@ export const QUESTIONS: Record<string, Question> = {
     id: 'Q25',
     text: "Would you like us to first contact you prior to offering the space to a client lower in the queue?",
     type: 'yes_no',
-    next: (answer: boolean) => 'ACTUAL_RETREAT_PROSPECT_CAPTURE'
+    next: (answer: number) => 'ACTUAL_RETREAT_PROSPECT_CAPTURE' // Answer is 0 for "Yes", 1 for "No"
   },
 
   // Lead Capture Flows
@@ -402,7 +402,7 @@ export const QUESTIONS: Record<string, Question> = {
     id: 'PLANNER_LEAD_CAPTURE',
     text: "Hope this interaction was helpful. I'll update our team with the summary",
     type: 'multiple_choice',
-    options: ["Continue"],
+    options: ["Options for staying in touch"],
     next: () => 'GREEN_OFFICE_UPDATE_OPTIONS'
   },
 
@@ -410,9 +410,10 @@ export const QUESTIONS: Record<string, Question> = {
     id: 'PLANNER_PROSPECT_CAPTURE',
     text: "Hope this interaction was helpful. Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team - does that work?",
     type: 'yes_no',
-    next: (answer: boolean) => {
-      if (answer) return 'ACQUIRE_NAME';
-      return 'GREEN_OFFICE_UPDATE_OPTIONS';
+    next: (answer: number) => {
+      // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
+      if (answer === 0) return 'ACQUIRE_NAME'; // Yes - proceed to contact acquisition
+      return 'GREEN_OFFICE_UPDATE_OPTIONS'; // No - show update options
     }
   },
 
@@ -420,7 +421,7 @@ export const QUESTIONS: Record<string, Question> = {
     id: 'ACTUAL_RETREAT_LEAD_CAPTURE',
     text: "I'll update our team with the summary of our chat. The fit today may not be perfect, but I suspect we'll want to stay in touch.",
     type: 'multiple_choice',
-    options: ["Continue"],
+    options: ["Options for staying in touch"],
     next: () => 'GREEN_OFFICE_UPDATE_OPTIONS'
   },
 
@@ -428,9 +429,10 @@ export const QUESTIONS: Record<string, Question> = {
     id: 'ACTUAL_RETREAT_PROSPECT_CAPTURE',
     text: "Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team to get further into your retreat details - does that work?",
     type: 'yes_no',
-    next: (answer: boolean) => {
-      if (answer) return 'ACQUIRE_NAME';
-      return 'GREEN_OFFICE_UPDATE_OPTIONS';
+    next: (answer: number) => {
+      // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
+      if (answer === 0) return 'ACQUIRE_NAME'; // Yes - proceed to contact acquisition
+      return 'GREEN_OFFICE_UPDATE_OPTIONS'; // No - show update options
     }
   },
 
@@ -486,7 +488,7 @@ export const QUESTIONS: Record<string, Question> = {
     text: "What is your name?",
     type: 'text',
     validation: { required: true },
-    next: () => 'ACQUIRE_COMPANY'
+    next: () => 'ACQUIRE_COMPANY' // Will be handled with correction logic
   },
 
   ACQUIRE_COMPANY: {
@@ -494,7 +496,7 @@ export const QUESTIONS: Record<string, Question> = {
     text: "What company are you with?",
     type: 'text',
     validation: { required: true },
-    next: () => 'ACQUIRE_EMAIL'
+    next: () => 'ACQUIRE_EMAIL' // Will be handled with correction logic
   },
 
   ACQUIRE_EMAIL: {
@@ -503,7 +505,7 @@ export const QUESTIONS: Record<string, Question> = {
     type: 'text',
     inputType: InputType.EMAIL,
     validation: { required: true },
-    next: () => 'ACQUIRE_PHONE'
+    next: () => 'ACQUIRE_PHONE' // Will be handled with correction logic
   },
 
   ACQUIRE_PHONE: {
@@ -511,16 +513,17 @@ export const QUESTIONS: Record<string, Question> = {
     text: "What is your phone number?",
     type: 'text',
     validation: { required: true },
-    next: () => 'CONTACT_CONFIRMATION'
+    next: () => 'CONTACT_CONFIRMATION' // Will be handled with correction logic
   },
 
   CONTACT_CONFIRMATION: {
     id: 'CONTACT_CONFIRMATION',
     text: "", // Will be dynamically generated
     type: 'yes_no',
-    next: (answer: boolean) => {
-      if (answer) return 'CONTACT_CONFIRMED';
-      return 'CONTACT_CORRECTION';
+    next: (answer: number) => {
+      // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
+      if (answer === 0) return 'CONTACT_CONFIRMED'; // Yes - contact info is correct
+      return 'CONTACT_CORRECTION'; // No - needs correction
     }
   },
 
@@ -568,9 +571,10 @@ export const QUESTIONS: Record<string, Question> = {
     id: 'SCHEDULE_CALL_CONFIRM',
     text: "", // Will be dynamically generated
     type: 'yes_no',
-    next: (answer: boolean) => {
-      if (answer) return 'SCHEDULE_CALL_CONFIRMED';
-      return 'SCHEDULE_CALL_PROPOSE';
+    next: (answer: number) => {
+      // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
+      if (answer === 0) return 'SCHEDULE_CALL_CONFIRMED'; // Yes - confirm the scheduled time
+      return 'SCHEDULE_CALL_PROPOSE'; // No - propose different times
     }
   },
 
@@ -602,6 +606,10 @@ export class SimpleChatbot {
   private scheduledTime?: string;
   private needsScheduling: boolean = false;
 
+  // Contact correction tracking
+  private fieldsToCorrect: Set<string> = new Set();
+  private isInCorrectionFlow: boolean = false;
+
   constructor() {
     this.reset();
   }
@@ -615,6 +623,8 @@ export class SimpleChatbot {
     this.updateMonths = undefined;
     this.scheduledTime = undefined;
     this.needsScheduling = false;
+    this.fieldsToCorrect = new Set();
+    this.isInCorrectionFlow = false;
   }
 
   getCurrentQuestion(): Question | null {
@@ -670,6 +680,37 @@ export class SimpleChatbot {
     if (question.id === 'ACQUIRE_EMAIL') this.contactInfo.email = answer;
     if (question.id === 'ACQUIRE_PHONE') this.contactInfo.phone = answer;
 
+    // Handle correction flow navigation
+    if (this.isInCorrectionFlow && (question.id === 'ACQUIRE_NAME' || question.id === 'ACQUIRE_COMPANY' || question.id === 'ACQUIRE_EMAIL' || question.id === 'ACQUIRE_PHONE')) {
+      // Remove the current field from correction list since it's been corrected
+      const currentField = question.id.replace('ACQUIRE_', '').toLowerCase();
+      this.fieldsToCorrect.delete(currentField);
+
+      // Find the next field that needs correction
+      if (this.fieldsToCorrect.has('name')) {
+        this.currentQuestion = 'ACQUIRE_NAME';
+        return { nextQuestion: 'ACQUIRE_NAME' };
+      }
+      if (this.fieldsToCorrect.has('company')) {
+        this.currentQuestion = 'ACQUIRE_COMPANY';
+        return { nextQuestion: 'ACQUIRE_COMPANY' };
+      }
+      if (this.fieldsToCorrect.has('email')) {
+        this.currentQuestion = 'ACQUIRE_EMAIL';
+        return { nextQuestion: 'ACQUIRE_EMAIL' };
+      }
+      if (this.fieldsToCorrect.has('phone')) {
+        this.currentQuestion = 'ACQUIRE_PHONE';
+        return { nextQuestion: 'ACQUIRE_PHONE' };
+      }
+
+      // All corrections completed, exit correction mode and go to confirmation
+      this.isInCorrectionFlow = false;
+      this.fieldsToCorrect.clear();
+      this.currentQuestion = 'CONTACT_CONFIRMATION';
+      return { nextQuestion: 'CONTACT_CONFIRMATION' };
+    }
+
     // Track update options
     if (question.id === 'GREEN_OFFICE_UPDATE_OPTIONS') {
       this.updateOption = answer;
@@ -680,7 +721,8 @@ export class SimpleChatbot {
 
     // Track scheduling
     if (question.id === 'PLANNER_PROSPECT_CAPTURE' || question.id === 'ACTUAL_RETREAT_PROSPECT_CAPTURE') {
-      this.needsScheduling = answer === true;
+      // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
+      this.needsScheduling = answer === 0; // Yes - user wants to schedule a call
     }
     if (question.id === 'SCHEDULE_CALL_PROPOSE' && answer !== 3) {
       const options = question.options || [];
@@ -693,23 +735,49 @@ export class SimpleChatbot {
     // Handle contact correction
     if (question.id === 'CONTACT_CORRECTION') {
       const correction = answer.toLowerCase().trim();
+
+      // Clear previous correction tracking and set correction mode
+      this.fieldsToCorrect.clear();
+      this.isInCorrectionFlow = true;
+
+      // Parse which fields need correction
       if (correction.includes('name')) {
+        this.fieldsToCorrect.add('name');
+      }
+      if (correction.includes('company')) {
+        this.fieldsToCorrect.add('company');
+      }
+      if (correction.includes('email')) {
+        this.fieldsToCorrect.add('email');
+      }
+      if (correction.includes('phone')) {
+        this.fieldsToCorrect.add('phone');
+      }
+
+      // If no specific field mentioned, default to name
+      if (this.fieldsToCorrect.size === 0) {
+        this.fieldsToCorrect.add('name');
+      }
+
+      // Start with the first field that needs correction
+      if (this.fieldsToCorrect.has('name')) {
         this.currentQuestion = 'ACQUIRE_NAME';
         return { nextQuestion: 'ACQUIRE_NAME' };
       }
-      if (correction.includes('company')) {
+      if (this.fieldsToCorrect.has('company')) {
         this.currentQuestion = 'ACQUIRE_COMPANY';
         return { nextQuestion: 'ACQUIRE_COMPANY' };
       }
-      if (correction.includes('email')) {
+      if (this.fieldsToCorrect.has('email')) {
         this.currentQuestion = 'ACQUIRE_EMAIL';
         return { nextQuestion: 'ACQUIRE_EMAIL' };
       }
-      if (correction.includes('phone')) {
+      if (this.fieldsToCorrect.has('phone')) {
         this.currentQuestion = 'ACQUIRE_PHONE';
         return { nextQuestion: 'ACQUIRE_PHONE' };
       }
-      // Default to name if unclear
+
+      // Fallback (should not reach here)
       this.currentQuestion = 'ACQUIRE_NAME';
       return { nextQuestion: 'ACQUIRE_NAME' };
     }
