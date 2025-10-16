@@ -21,7 +21,7 @@ export const QUESTIONS: Record<string, Question> = {
   // Branch A: Planner Path (Q1 → Q2)
   Q2: {
     id: 'Q2',
-    text: "We may be a great fit! Green Office is purpose-built to help retreat facilitators (planners/platforms/consultants) offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?",
+    text: "We may be a neat fit! Green Office is purpose-built to help retreat facilitators (planners/platforms/consultants) offer deeply differentiated retreat experiences to your clients. What are you focused on at the moment?",
     type: 'multiple_choice',
     options: [
       "Exploring potential venues for our platform or portfolio",
@@ -36,7 +36,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   Q2_1: {
     id: 'Q2_1',
-    text: "Great, let's dig into your upcoming retreat to see if it is a fit",
+    text: "Sounds good, let's dig into your upcoming retreat to see if it is a fit",
     type: 'multiple_choice',
     options: ["Assess fit"],
     next: () => 'Q3'
@@ -44,7 +44,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   Q2_2_1: {
     id: 'Q2_2_1',
-    text: "Perfect. Green Office is designed to help differentiate your platform versus the competition. I feel we may want to escalate your interest to a meeting with our leadership team to explore partnership models. How many retreats are organized by your company or through your platform per year?",
+    text: "I sense a fit. Green Office is designed to help differentiate your platform versus the competition. We may want to consider escalating your interest to a meeting with our leadership team to explore partnership models. How many retreats are organized by your company or through your platform per year?",
     type: 'multiple_choice',
     options: [
       "Fewer than 10",
@@ -103,7 +103,7 @@ export const QUESTIONS: Record<string, Question> = {
   // Branch B: Actual Retreat Path, Determining Fit (Q1 → Q3)
   Q3: {
     id: 'Q3',
-    text: "Great, I have three critical questions to see if Green Office is a possible fit based on the number (estimated or actual) of retreat attendees, the (approximate or actual) retreat date and its estimated duration. Don't worry about perfect detail accuracy quite yet - let's see if we are in the approximate zone. How many attendees do you expect?",
+    text: "Got it. I have three critical questions to see if Green Office is a possible fit. Don't worry about perfect accuracy just yet - let's see if we are in the zone. Roughly, how many attendees do you expect?",
     type: 'number',
     validation: { min: 0, required: true },
     next: (answer: number) => {
@@ -115,7 +115,7 @@ export const QUESTIONS: Record<string, Question> = {
     },
     responseMessage: (answer: number) => {
       if (answer >= 2 && answer <= 50) {
-        return "Perfect. Green Office is purpose-built for retreats of that size.";
+        return "Excellent. Green Office is purpose-built for retreats of that size.";
       }
       if (answer === 1) {
         return "Sounds like quite the introverted retreat! We do have some individual bookings though retreats are what we are built for.";
@@ -132,7 +132,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   Q4: {
     id: 'Q4',
-    text: "What approximate date do you aim to start the retreat on?",
+    text: "On approximately which date do you aim to start the retreat?",
     type: 'date',
     validation: { required: true },
     next: (answer: string) => {
@@ -153,7 +153,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   Q5: {
     id: 'Q5',
-    text: "Approximately, how many days long do you expect the retreat to run?",
+    text: "Approximately how many days long do you expect the retreat to run?",
     type: 'number',
     validation: { min: 1, required: true },
     next: (answer: number) => {
@@ -170,7 +170,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   Q6: {
     id: 'Q6',
-    text: "Since Green Office is a good fit for your team, we could wrap up this chat with next steps or, if you prefer, I have a longer list of detailed retreat planning questions. If you have the time, the detailed retreat questions will allow our team to better prepare for our follow up meeting and should make that meeting sail by faster. The questions may also help you think through the retreat planning details. Let me know which you prefer?",
+    text: "Since Green Office seems to fit your team, we could wrap up this chat with next steps or, if you prefer, I have a longer list of detailed retreat planning questions. If you have the time, the detailed retreat questions will allow our team to better prepare for our follow up meeting and should make that meeting sail by faster. The questions may also help you think through the retreat planning details. Let me know which you prefer?",
     type: 'multiple_choice',
     options: [
       "Let's wrap up this chat with next steps (1-2 minutes)",
@@ -185,7 +185,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   Q7: {
     id: 'Q7',
-    text: "Great! Let's get into it - I have 18 questions for you which should take 4 - 5 minutes. What are Primary retreat goals? (you may select more than 1)",
+    text: "Let's get into it - I have 18 questions for you which should take 4 - 5 minutes. What are Primary retreat goals? (you may select more than 1)",
     type: 'multiple_choice_multi_select',
     options: [
       "Team-building",
@@ -246,8 +246,8 @@ export const QUESTIONS: Record<string, Question> = {
     text: "Transportation needs?",
     type: 'multiple_choice_multi_select',
     options: [
-      "Would prefer Green Office manages all transportation to/from the Airport",
-      "Would prefer to manage all transportation to/from the Airport ourselves (eg. car rental, taxi, etc)"
+      "Prefer Green Office manages some/all transportation to/from the Airport",
+      "Prefer to manage some/all transportation to/from the Airport ourselves (eg. car rental, taxi, etc)"
     ],
     next: (answer: number[]) => 'Q12'
   },
@@ -259,14 +259,14 @@ export const QUESTIONS: Record<string, Question> = {
     options: [
       "Attendees may share rooms (separate beds) - lowest cost option",
       "Attendees may share villas (separate rooms)",
-      "Attendees each have a private villas (maximum privacy)"
+      "Attendees each have a private villa (maximum privacy)"
     ],
     next: (answer: number[]) => 'Q13'
   },
 
   Q13: {
     id: 'Q13',
-    text: "Any pets or family inclusions?",
+    text: "Any pets or visitors (eg. family)?",
     type: 'multiple_choice_multi_select',
     options: [
       "Pets",
@@ -303,7 +303,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   Q16: {
     id: 'Q16',
-    text: "What is your company's Overall size?",
+    text: "How many employees in your company?",
     type: 'multiple_choice',
     options: [
       "<50 employees",
@@ -323,7 +323,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   Q18: {
     id: 'Q18',
-    text: "What is a line or two description of the role the team (attending the retreat) plays in the company?",
+    text: "What is a line or two description of the role the team (attending the retreat) plays at the company?",
     type: 'text',
     next: (answer: string) => 'Q19'
   },
@@ -400,7 +400,7 @@ export const QUESTIONS: Record<string, Question> = {
   // Lead Capture Flows
   PLANNER_LEAD_CAPTURE: {
     id: 'PLANNER_LEAD_CAPTURE',
-    text: "Hope this interaction was helpful. I'll update our team with the summary",
+    text: "Hope this interaction was helpful. I'll update our team with a summary of our chat. Let's consider some options for staying in touch.",
     type: 'multiple_choice',
     options: ["Options for staying in touch"],
     next: () => 'GREEN_OFFICE_UPDATE_OPTIONS'
@@ -408,7 +408,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   PLANNER_PROSPECT_CAPTURE: {
     id: 'PLANNER_PROSPECT_CAPTURE',
-    text: "Hope this interaction was helpful. Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team - does that work?",
+    text: "Based on our chat, I suspect your organization and Green Office make a good fit. I suggest we organize a 20 minute introductory call with our team - does that work?",
     type: 'yes_no',
     next: (answer: number) => {
       // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
@@ -419,7 +419,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   ACTUAL_RETREAT_LEAD_CAPTURE: {
     id: 'ACTUAL_RETREAT_LEAD_CAPTURE',
-    text: "I'll update our team with the summary of our chat. The fit today may not be perfect, but I suspect we'll want to stay in touch.",
+    text: "Hope this interaction was helpful. I'll update our team with a summary of our chat. While now may not be a perfect fit, let's consider some options for staying in touch.",
     type: 'multiple_choice',
     options: ["Options for staying in touch"],
     next: () => 'GREEN_OFFICE_UPDATE_OPTIONS'
@@ -427,7 +427,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   ACTUAL_RETREAT_PROSPECT_CAPTURE: {
     id: 'ACTUAL_RETREAT_PROSPECT_CAPTURE',
-    text: "Based on our chat, I expect your organization and Green Office should be a good fit. I suggest we organize a 20m introductory call with our team to get further into your retreat details - does that work?",
+    text: "Based on our chat, I suspect your organization and Green Office should be a good fit. I suggest we organize a 20 minute introductory call with our team to dig further into your retreat details - does that work?",
     type: 'yes_no',
     next: (answer: number) => {
       // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
@@ -522,7 +522,8 @@ export const QUESTIONS: Record<string, Question> = {
     type: 'yes_no',
     next: (answer: number) => {
       // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
-      if (answer === 0) return 'CONTACT_CONFIRMED'; // Yes - contact info is correct
+      // Note: When answer is 0 (Yes), routing is handled in processResponse() based on needsScheduling flag
+      if (answer === 0) return 'END'; // Yes - will be overridden in processResponse()
       return 'CONTACT_CORRECTION'; // No - needs correction
     }
   },
@@ -534,18 +535,10 @@ export const QUESTIONS: Record<string, Question> = {
     next: () => 'ACQUIRE_NAME' // Will be handled with logic
   },
 
-  CONTACT_CONFIRMED: {
-    id: 'CONTACT_CONFIRMED',
-    text: "", // Will be dynamically generated
-    type: 'multiple_choice',
-    options: ["Continue"],
-    next: () => 'END' // Will be overridden if scheduling needed
-  },
-
   // Schedule Call Flow
   SCHEDULE_CALL_PROPOSE: {
     id: 'SCHEDULE_CALL_PROPOSE',
-    text: "Great! When would work best for a 20-minute introductory call?",
+    text: "When would work best for a 20-minute introductory call?",
     type: 'multiple_choice',
     options: [
       "Tomorrow at 2:00 PM",
@@ -580,7 +573,7 @@ export const QUESTIONS: Record<string, Question> = {
 
   SCHEDULE_CALL_CONFIRMED: {
     id: 'SCHEDULE_CALL_CONFIRMED',
-    text: "Perfect! Email sent to you and admin@greenofficevillas.com with the meeting details. We look forward to speaking with you!",
+    text: "We are set. Email sent to you and admin@greenofficevillas.com with the meeting details.  Feel free to respond to admin@greenofficevillas.com if you have any questions or plans change. We look forward to speaking with you!",
     type: 'multiple_choice',
     options: ["End conversation"],
     next: () => 'END'
@@ -635,24 +628,7 @@ export class SimpleChatbot {
     if (question.id === 'CONTACT_CONFIRMATION') {
       return {
         ...question,
-        text: `Please confirm your contact information:\n\nName: ${this.contactInfo.name}\nCompany: ${this.contactInfo.company}\nEmail: ${this.contactInfo.email}\nPhone: ${this.contactInfo.phone}\n\nIs this correct?`
-      };
-    }
-
-    if (question.id === 'CONTACT_CONFIRMED') {
-      let message = "Thank you! ";
-      if (this.updateOption === 0) {
-        message += "Green Office will contact you when bookings are available and you are at the front of the waitlist.";
-      } else if (this.updateOption === 1) {
-        message += `Green Office will contact you in ${this.updateMonths} months by email.`;
-      } else if (this.updateOption === 2) {
-        message += `Green Office will contact you in ${this.updateMonths} months by phone.`;
-      } else if (this.updateOption === 3) {
-        message += "Green Office will keep you up to date with project updates.";
-      }
-      return {
-        ...question,
-        text: message
+        text: `Please confirm your contact information:\n\n  👤 ${this.contactInfo.name}\n  🏢 ${this.contactInfo.company}\n  📧 ${this.contactInfo.email}\n  📱 ${this.contactInfo.phone}\n\nIs this correct?`
       };
     }
 
@@ -782,14 +758,33 @@ export class SimpleChatbot {
       return { nextQuestion: 'ACQUIRE_NAME' };
     }
 
-    // Handle contact confirmed - route to scheduling if needed
-    if (question.id === 'CONTACT_CONFIRMED') {
-      if (this.needsScheduling) {
-        this.currentQuestion = 'SCHEDULE_CALL_PROPOSE';
-        return { nextQuestion: 'SCHEDULE_CALL_PROPOSE' };
+    // Handle contact confirmation - skip CONTACT_CONFIRMED and route directly with thank you message
+    if (question.id === 'CONTACT_CONFIRMATION') {
+      // For yes/no questions, answer is 0 for "Yes" and 1 for "No"
+      if (answer === 0) {
+        // User confirmed contact info is correct
+        // Generate thank you message based on update option
+        let thankYouMessage = "Contact information successfully confirmed.";
+        if (this.updateOption === 0) {
+          thankYouMessage += "Green Office will contact you when bookings are available and you are at the front of the waitlist.";
+        } else if (this.updateOption === 1) {
+          thankYouMessage += `Green Office will contact you in ${this.updateMonths} months by email.`;
+        } else if (this.updateOption === 2) {
+          thankYouMessage += `Green Office will contact you in ${this.updateMonths} months by phone.`;
+        } else if (this.updateOption === 3) {
+          thankYouMessage += "Green Office will keep you updated on our project.";
+        }
+
+        // Route based on scheduling needs
+        if (this.needsScheduling) {
+          this.currentQuestion = 'SCHEDULE_CALL_PROPOSE';
+          return { nextQuestion: 'SCHEDULE_CALL_PROPOSE', response: thankYouMessage };
+        } else {
+          this.currentQuestion = 'END';
+          return { nextQuestion: 'END', response: thankYouMessage };
+        }
       }
-      this.currentQuestion = 'END';
-      return { nextQuestion: 'END' };
+      // If answer is 1 (No), the next() function will handle routing to CONTACT_CORRECTION
     }
 
     // Log meeting when confirmed
