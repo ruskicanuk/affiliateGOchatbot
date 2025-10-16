@@ -647,8 +647,29 @@ export class SimpleChatbot {
     const question = this.getCurrentQuestion();
     if (!question) return { nextQuestion: 'Q1' };
 
-    // Store the response
-    this.userResponses[question.id] = answer;
+    // Store the response in human-readable format
+    let humanReadableAnswer = answer;
+
+    // Convert answer to human-readable format based on question type
+    if (question.type === 'yes_no') {
+      // Yes/No questions: 0 = "Yes", 1 = "No"
+      humanReadableAnswer = answer === 0 ? 'Yes' : 'No';
+    } else if (question.type === 'multiple_choice' && question.options) {
+      // Single-select: Store the option text instead of index
+      if (typeof answer === 'number' && answer >= 0 && answer < question.options.length) {
+        humanReadableAnswer = question.options[answer];
+      }
+    } else if (question.type === 'multiple_choice_multi_select' && question.options) {
+      // Multi-select: Store array of option texts instead of indices
+      if (Array.isArray(answer)) {
+        humanReadableAnswer = answer
+          .filter(idx => idx >= 0 && idx < question.options!.length)
+          .map(idx => question.options![idx]);
+      }
+    }
+    // For text, number, date, email inputs: keep the value as-is (already human-readable)
+
+    this.userResponses[question.id] = humanReadableAnswer;
 
     // Track contact information
     if (question.id === 'ACQUIRE_NAME') this.contactInfo.name = answer;
@@ -869,32 +890,31 @@ export class SimpleChatbot {
   calculateQualificationScore(): number {
     let score = 0;
 
-    // Role and basic qualification (20 points)
-    if (this.userResponses.Q1 === 0 || this.userResponses.Q1 === 1) score += 20;
-
-    // Group size (20 points)
-    if (this.userResponses.Q3) {
-      const attendees = this.userResponses.Q3;
-      if (attendees >= 10 && attendees <= 50) score += 20;
-      else if (attendees >= 5 && attendees <= 100) score += 15;
-      else if (attendees >= 1) score += 10;
+    // Q1: Role (40 points for Retreat Facilitator, 20 points for Team Member/Leader)
+    if (this.userResponses.Q1 !== undefined) {
+      const q1Response = this.userResponses.Q1;
+      // Check for numeric index (backward compatibility) or text value
+      if (q1Response === 0 || (typeof q1Response === 'string' && q1Response.includes('Retreat Facilitator'))) {
+        score += 40; // Retreat Facilitator
+      } else if (q1Response === 1 || (typeof q1Response === 'string' && q1Response.includes('Team Member/Leader'))) {
+        score += 20; // Team Member/Leader
+      }
     }
 
-    // Date validation (15 points)
-    if (this.userResponses.Q4) {
-      const inputDate = new Date(this.userResponses.Q4);
-      const cutoffDate = new Date('2026-11-01');
-      if (inputDate >= cutoffDate) score += 15;
+    // Contact details confirmed (35 points)
+    if (this.userResponses.CONTACT_CONFIRMATION !== undefined) {
+      const contactConfirmed = this.userResponses.CONTACT_CONFIRMATION;
+      // Check for "Yes" (text) or 0 (numeric index for backward compatibility)
+      if (contactConfirmed === 'Yes' || contactConfirmed === 0) {
+        score += 35;
+      }
     }
 
-    // Duration validation (15 points)
-    if (this.userResponses.Q5) {
-      const duration = this.userResponses.Q5;
-      if (duration >= 3 && duration <= 120) score += 15;
+    // Scheduled a call (25 points)
+    if (this.userResponses.SCHEDULE_CALL_CONFIRMED !== undefined) {
+      // If user reached SCHEDULE_CALL_CONFIRMED, they scheduled a call
+      score += 25;
     }
-
-    // Detailed questions completion (30 points)
-    if (this.userResponses.Q7) score += 30;
 
     return Math.min(score, 100);
   }

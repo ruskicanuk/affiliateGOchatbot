@@ -1,4 +1,4 @@
-# Green Office Villas Chatbot - Simplified POC
+# Green Office Chatbot - Simplified POC
 
 ## 📚 Core Documentation
 **IMPORTANT**: Always reference these 4 core documentation files before making any changes:

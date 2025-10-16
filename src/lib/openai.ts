@@ -10,9 +10,9 @@ export async function generateEnhancedResponse(
   conversationHistory: string[]
 ): Promise<string> {
   try {
-    const systemPrompt = `You are a helpful assistant for Green Office Villas, a premium eco-friendly retreat venue in the Dominican Republic.
+    const systemPrompt = `You are a helpful assistant for Green Office, a premium eco-friendly retreat venue in the Dominican Republic.
 
-    Key facts about Green Office Villas:
+    Key facts about Green Office:
     - Located in the Dominican Republic with Caribbean-inspired architecture
     - Private villas with integrated office spaces
     - High-speed, reliable internet and modern amenities
@@ -28,7 +28,7 @@ export async function generateEnhancedResponse(
     User response: ${userResponse}
     Recent conversation: ${conversationHistory.slice(-3).join('\n')}
 
-    Please provide a helpful response that acknowledges their input and provides relevant information about Green Office Villas.`;
+    Please provide a helpful response that acknowledges their input and provides relevant information about Green Office.`;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
@@ -40,16 +40,16 @@ export async function generateEnhancedResponse(
       temperature: 0.7,
     });
 
-    return completion.choices[0]?.message?.content || "Thank you for your response. Let me help you with more information about Green Office Villas.";
+    return completion.choices[0]?.message?.content || "Thank you for your response. Let me help you with more information about Green Office.";
   } catch (error) {
     console.error('OpenAI API error:', error);
-    return "Thank you for your response. I'm here to help you learn more about Green Office Villas and plan your perfect retreat.";
+    return "Thank you for your response. I'm here to help you learn more about Green Office and plan your perfect retreat.";
   }
 }
 
 export async function generateKnowledgeResponse(query: string): Promise<string> {
   try {
-    const systemPrompt = `You are a knowledgeable assistant for Green Office Villas. Answer questions accurately based on these facts:
+    const systemPrompt = `You are a knowledgeable assistant for Green Office. Answer questions accurately based on these facts:
 
     - Location: Dominican Republic with Caribbean-inspired architecture
     - Accommodation: Private villas with integrated office spaces
@@ -75,10 +75,10 @@ export async function generateKnowledgeResponse(query: string): Promise<string> 
       temperature: 0.7,
     });
 
-    return completion.choices[0]?.message?.content || "I'd be happy to help you with information about Green Office Villas. Could you please rephrase your question?";
+    return completion.choices[0]?.message?.content || "I'd be happy to help you with information about Green Office. Could you please rephrase your question?";
   } catch (error) {
     console.error('OpenAI API error:', error);
     // Fallback to static knowledge base
-    return "I'm here to help with information about Green Office Villas. Please try rephrasing your question, or ask about our location, pricing, amenities, or booking process.";
+    return "I'm here to help with information about Green Office. Please try rephrasing your question, or ask about our location, pricing, amenities, or booking process.";
   }
 }
