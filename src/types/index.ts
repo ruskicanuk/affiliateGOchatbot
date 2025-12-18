@@ -106,6 +106,7 @@ export interface ChatInterfaceMessage {
 
   // Visual state tracking
   optionStates?: Record<number, OptionState>; // Track visual state of each option
+  isLoading?: boolean;                        // Loading indicator for async operations (e.g., knowledge base queries)
 }
 
 // Basic types

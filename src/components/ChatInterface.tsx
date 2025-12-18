@@ -6,7 +6,7 @@ import { Input } from './ui/Input';
 import Image from 'next/image';
 import { SimpleChatbot } from '@/lib/chatbot';
 import { db, supabase } from '@/lib/supabase';
-import { ChatMessage, Question, OptionType, InputType, ChatInterfaceMessage, OptionState } from '@/types';
+import { Question, OptionType, InputType, ChatInterfaceMessage } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import '../styles/chat-animations.css';
 
@@ -89,7 +89,7 @@ export const ChatInterface: React.FC = () => {
         setMessages([{
           id: uuidv4(),
           type: 'bot',
-          content: "Welcome to Green Office Villas! I'm here to help you plan the perfect retreat for your team.",
+          content: "Welcome to Green Office! I'm here to help you plan the perfect retreat for your team.",
           timestamp: new Date()
         }]);
       }
@@ -159,10 +159,8 @@ export const ChatInterface: React.FC = () => {
           message.inputType = InputType.DATE;
           message.isInputActive = true; // Auto-expand input field
 
-          // Set default date value to 6 months from today
-          const defaultDate = new Date();
-          defaultDate.setMonth(defaultDate.getMonth() + 6);
-          const defaultDateString = defaultDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+          // Set default date value to November 1, 2026 (aligns with validation cutoff)
+          const defaultDateString = '2026-11-01'; // Format: YYYY-MM-DD
           message.inputValue = defaultDateString;
 
           // Also set in inputValues state so it appears in the input field
@@ -227,13 +225,37 @@ export const ChatInterface: React.FC = () => {
       }
 
       const result = chatbot.processResponse(response);
-      
+
       if (result.response) {
         await addMessage('bot', result.response);
       }
 
+      // Save user responses and qualification score to database after each response
+      if (supabase) {
+        try {
+          const qualificationScore = chatbot.calculateQualificationScore();
+          await db.updateSession(sessionId, {
+            userResponses: chatbot.getUserResponses(),
+            qualificationScore: qualificationScore
+          });
+        } catch (error) {
+          console.warn('Failed to save user responses to database:', error);
+          // Continue without failing - app works without persistence
+        }
+      }
+
       // Handle conversation end
       if (result.nextQuestion === 'END') {
+        // Mark session as completed
+        if (supabase) {
+          try {
+            await db.updateSession(sessionId, {
+              sessionStatus: 'completed'
+            });
+          } catch (error) {
+            console.warn('Failed to update session status:', error);
+          }
+        }
         // Conversation has ended, no more questions
         return;
       }
@@ -312,7 +334,10 @@ export const ChatInterface: React.FC = () => {
   // Multi-select confirm handler
   const handleMultiSelectConfirm = async (messageId: string) => {
     const message = messages.find(m => m.id === messageId);
-    if (!message || !message.selectedOptions || message.selectedOptions.length === 0) return;
+    if (!message) return;
+
+    // Allow empty selections (user can skip the question)
+    const selections = message.selectedOptions || [];
 
     // Mark as completed
     setMessages(prev => prev.map(m =>
@@ -321,8 +346,8 @@ export const ChatInterface: React.FC = () => {
         : m
     ));
 
-    // Process the response
-    await handleUserResponse(message.selectedOptions, false);
+    // Process the response (empty array is valid)
+    await handleUserResponse(selections, false);
   };
 
   // User-override activation handler
@@ -396,6 +421,18 @@ export const ChatInterface: React.FC = () => {
   // Custom question handler
   const handleCustomQuestion = async (question: string) => {
     setIsLoading(true);
+
+    // Add loading indicator message
+    const loadingMessageId = uuidv4();
+    const loadingMessage: ChatInterfaceMessage = {
+      id: loadingMessageId,
+      type: 'bot',
+      content: 'Searching knowledge base...',
+      timestamp: new Date(),
+      isLoading: true
+    };
+    setMessages(prev => [...prev, loadingMessage]);
+
     try {
       // Don't add user message here - it's already embedded in the bot message
       // Process with OpenAI knowledge base
@@ -409,6 +446,9 @@ export const ChatInterface: React.FC = () => {
           type: 'knowledge'
         }),
       });
+
+      // Remove loading message
+      setMessages(prev => prev.filter(m => m.id !== loadingMessageId));
 
       if (response.ok) {
         const data = await response.json();
@@ -425,6 +465,8 @@ export const ChatInterface: React.FC = () => {
       }
     } catch (error) {
       console.error('Error processing custom question:', error);
+      // Remove loading message on error
+      setMessages(prev => prev.filter(m => m.id !== loadingMessageId));
       await addMessage('bot', 'I apologize, but I encountered an error processing your question. Please try again.');
     } finally {
       setIsLoading(false);
@@ -584,7 +626,6 @@ export const ChatInterface: React.FC = () => {
   // Render multi-select options
   const renderMultiSelectOptions = (message: ChatInterfaceMessage) => {
     const selectedOptions = message.selectedOptions || [];
-    const hasSelections = selectedOptions.length > 0;
 
     return (
       <div className="space-y-3">
@@ -615,16 +656,17 @@ export const ChatInterface: React.FC = () => {
           );
         })}
 
-        {/* Confirm button */}
-        {hasSelections && (
-          <button
-            onClick={() => handleMultiSelectConfirm(message.id)}
-            disabled={isLoading}
-            className="w-full text-left p-4 rounded-lg border border-green-500 bg-green-500 text-white text-lg hover:bg-green-600 transition-all duration-200"
-          >
-            Confirm Selection{selectedOptions.length > 1 ? 's' : ''} ({selectedOptions.length})
-          </button>
-        )}
+        {/* Confirm button - always visible, allows skipping with zero selections */}
+        <button
+          onClick={() => handleMultiSelectConfirm(message.id)}
+          disabled={isLoading}
+          className="w-full text-left p-4 rounded-lg border border-green-500 bg-green-500 text-white text-lg hover:bg-green-600 transition-all duration-200"
+        >
+          {selectedOptions.length > 0
+            ? `Confirm Selection${selectedOptions.length > 1 ? 's' : ''} (${selectedOptions.length})`
+            : 'None of the Above'
+          }
+        </button>
 
         {/* User-override option */}
         <button
@@ -811,9 +853,18 @@ export const ChatInterface: React.FC = () => {
                     : 'bg-gray-100 text-gray-900 message-bot'
                 }`}
               >
-                {message.type === 'bot-with-options' ? (
+                {message.isLoading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+                    <p className="text-lg text-gray-600">{message.content}</p>
+                  </div>
+                ) : message.type === 'bot-with-options' ? (
                   <div className="space-y-4">
-                    <p className="text-lg text-gray-900">{message.content}</p>
+                    <p className="text-lg text-gray-900 whitespace-pre-wrap">{message.content}</p>
                     {renderMessageOptions(message)}
                   </div>
                 ) : (
