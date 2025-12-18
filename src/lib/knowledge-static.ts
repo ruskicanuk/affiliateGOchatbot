@@ -1,128 +1,84 @@
-// Static knowledge base - no database needed for POC
+// Static knowledge base - Single source of truth from KNOWLEDGE_BASE_DOCUMENTATION.md
 export const KNOWLEDGE_BASE = {
-  "pricing": {
-    keywords: ["price", "cost", "pricing", "budget", "rates", "expensive", "cheap", "affordable"],
-    response: "Packages start under $500 (daily) per person including accommodation, meals, airport pickup and amenities. Pricing varies based on degree of accommodation privacy (eg. shared rooms, shared villas or private villas), season and length of stay (longer stays pay less per day)"
-  },
   "location": {
-    keywords: ["location", "where", "address", "tropical", "caribbean", "dominican republic", "place"],
-    response: "Green Office is located in a tropical paradise with Caribbean-inspired architecture in the Dominican Republic. The work-oriented resort setting provides a serene environment perfect for productive team retreats while maintaining connectivity to modern amenities."
+    keywords: ["location", "where", "address", "tropical", "caribbean", "dominican republic", "cabarete", "surroundings", "noise", "map", "place"],
+    response: "Green Office Villas is a private 'nature-first' work resort in the Dominican Republic, just 20 minutes east of Cabarete and 8 minutes from the nearest town. You'll enjoy complete tranquility—no city views or sounds—just tropical paradise as your backdrop. Is there anything else you'd like to know?"
   },
-  "facilities": {
-    keywords: ["facilities", "villas", "offices", "spaces", "accommodation"],
-    response: "We feature private villas with integrated office spaces, combining luxury accommodation with professional work environments. Each villa includes ergonomic furniture, dedicated work areas, and seamless indoor-outdoor flow for balanced productivity, inspiration and relaxation."
+  "target_audience": {
+    keywords: ["who is this for", "target audience", "corporate", "startup", "individual", "work resort", "segments"],
+    response: "We're a luxury Work Resort designed for: Corporate retreats & leadership offsites, Innovation sessions & product launches, Employee reward/incentive trips, and Executive workcations for individuals/digital nomads. We blend 5-star accommodations with professional workspaces for productive, memorable experiences. How else can I assist you today?"
   },
   "capacity": {
-    keywords: ["capacity", "size", "how many", "attendees", "guests", "people", "expansion"],
-    response: "Current capacity accommodates up to 50 guests in Phase 1. We're expanding to serve up to 300+ guests by 2027-2028. For groups of 51-300+, we maintain a waitlist and provide updates on availability."
+    keywords: ["capacity", "size", "how many", "attendees", "guests", "people", "expansion", "occupancy", "large groups", "buyout"],
+    response: "Phase 1 accommodates 55–110 guests: 55 guests with private rooms (1 per room) or up to 110 guests with shared rooms (2 single beds per room). We specialize in exclusive buyouts for a private campus feel and can combine villas to fit your exact group size. Anything else I can help with?"
   },
-  "internet": {
-    keywords: ["internet", "wifi", "speed", "bandwidth", "connectivity", "tech"],
-    response: "High-speed, reliable internet ensures reliable connectivity for video conferencing, file sharing, and remote work needs. Multiple access points throughout the property guarantee strong signal in all areas."
+  "connectivity": {
+    keywords: ["internet", "wifi", "speed", "bandwidth", "connectivity", "tech", "starlink", "fiber"],
+    response: "We prioritize reliable tech: lightning-fast fiber internet throughout the property, backed by Starlink for 100% redundancy. High-speed connectivity works seamlessly in villas, offices, and the event center—perfect for hybrid meetings and video calls. Is there anything else you'd like to know?"
   },
-  "affiliate": {
-    keywords: ["affiliate", "commission", "planner", "discount", "referral"],
-    response: "Retreat planners and affiliates earn a commission on successful bookings. We also offer discounts for qualified planners to help you provide competitive pricing to your clients."
+  "workspaces": {
+    keywords: ["office", "desk", "ergonomic", "monitor", "boardrooms", "breakout", "workspace", "meeting", "conference"],
+    response: "Every villa includes professional private offices with ergonomic chairs, dual monitors, and high-speed internet. We also offer panoramic boardrooms and creative breakout zones for collaboration. How else can I help?"
   },
-  "office_amenities": {
-    keywords: ["office", "workspace", "meeting", "conference", "projector", "whiteboard"],
-    response: "Office spaces include ergonomic desks and chairs, docking stations connected to 2 monitors, whiteboards, projectors and video conferencing equipment. Conference rooms accommodate various group sizes for meetings and presentations."
+  "event_center": {
+    keywords: ["event center", "launch", "demo", "presentation", "stage", "all-hands", "product launch"],
+    response: "Our flexible Event Center seats up to 110 and features professional AV, stage, and lighting—ideal for strategy sessions, product demos, investor showcases, or celebratory dinners with tropical ambiance. Anything else on your mind?"
   },
-  "relaxation": {
-    keywords: ["pool", "yoga", "relaxation", "wellness", "spa", "outdoor"],
-    response: "Relaxation amenities include swimming pools, dedicated yoga decks, hiking trails, and outdoor lounging areas. The tropical setting provides natural stress relief and team bonding opportunities."
+  "villa_types": {
+    keywords: ["villa types", "bedrooms", "phase 1", "inventory", "facilities", "villas", "accommodation"],
+    response: "Phase 1 villas: Classic Luxury (3-Bedroom) – great for small teams, Executive Luxury (4- or 5-Bedroom) – expansive spaces with private offices, Executive Estate (11-Bedroom) – flagship for larger groups. All designed for team cohesion and productivity."
   },
-  "dining": {
-    keywords: ["food", "meals", "dining", "catering", "organic", "dietary"],
-    response: "Organic, locally-sourced meals with customizable options including vegan, vegetarian, and gluten-free choices. Full catering, partial catering, or self-service options available based on your preferences."
+  "room_config": {
+    keywords: ["shared room", "private room", "bed", "sleeping arrangements", "beds"],
+    response: "Private: King bed (single occupancy). Shared: Two single beds per room (double occupancy). Let me know your group size and I can suggest the best setup!"
   },
-  "technology": {
-    keywords: ["av", "audio visual", "tech setup", "equipment", "presentation"],
-    response: "Complete AV equipment including projectors, sound systems, microphones, and presentation tools. Technical support available to ensure smooth operation of all equipment during your retreat."
+  "pricing": {
+    keywords: ["price", "cost", "pricing", "budget", "rates", "expensive", "cheap", "affordable", "high season", "low season", "villa price"],
+    response: "Base rates include villa, workspaces, wellness facilities, courts, beach access, and curated team activities (meals extra). High Season (Dec–Apr): 3-Bed Classic ~$2,250 USD, 4-Bed Executive ~$3,850 USD, 5-Bed Executive ~$4,550 USD, 11-Bed Estate ~$8,350 USD. Low Season (Jun–Oct): ~25% off (e.g., 3-Bed starts ~$1,665 USD). Group Discounts: 5% (10–15 guests), 10% (16–30), 15% (30+). Preferred partners up to 40% off. Happy to quote your dates!"
   },
-  "accessibility": {
-    keywords: ["accessibility", "wheelchair", "ramps", "adapted", "special needs"],
-    response: "Accessibility features include ramps, adapted villas, and accommodations for guests with special needs. Contact us in advance to discuss specific accessibility requirements."
-  },
-  "sustainability": {
-    keywords: ["sustainability", "eco-friendly", "green", "environment", "carbon"],
-    response: "100% renewable energy through solar power, zero-waste initiatives, and organic gardens on-site. We're certified eco-friendly and include carbon offsets with every booking."
-  },
-  "local_sourcing": {
-    keywords: ["local", "sourcing", "community", "organic", "gardens"],
-    response: "We prioritize local sourcing for meals and materials, supporting the community while reducing environmental impact. On-site organic gardens provide fresh ingredients for meals."
-  },
-  "tree_planting": {
-    keywords: ["trees", "planting", "environmental", "offset", "green initiative"],
-    response: "Every booking includes tree planting to offset carbon footprint. Guests can participate in planting activities as part of their team-building experience."
-  },
-  "booking": {
-    keywords: ["booking", "reserve", "process", "deposit", "payment"],
-    response: "Booking process: 1) Inquiry via chatbot/website, 2) Receive personalized quote via email, 3) 20% deposit to reserve dates, 4) Full payment 30 days prior to arrival."
-  },
-  "cancellation": {
-    keywords: ["cancellation", "refund", "policy", "cancel", "change"],
-    response: "Cancellations with 60+ days notice receive 50% refund. Changes to dates subject to availability. We recommend travel insurance for additional protection."
-  },
-  "availability": {
-    keywords: ["availability", "calendar", "seasons", "peak", "booking ahead"],
-    response: "Peak seasons (January-March, July-September) require booking 6+ months in advance. Off-peak periods offer 20% discounts and more flexible availability."
-  },
-  "calendar": {
-    keywords: ["calendar", "schedule", "dates", "availability", "when"],
-    response: "Visit www.greenofficevillas.com/book for real-time calendar availability. We recommend booking well in advance, especially for peak seasons and larger groups."
-  },
-  "geographic": {
-    keywords: ["country", "region", "climate", "weather", "tropical"],
-    response: "Located in a tropical climate region with year-round warm weather. The setting provides a perfect escape from urban environments while maintaining professional amenities."
-  },
-  "transportation": {
-    keywords: ["airport", "shuttle", "transportation", "travel", "getting there"],
-    response: "Nearest airport (Puerto Plata, POP) is approximately 50 minutes shuttle ride away. Santiago (STI) is about 1.5 hours away. Green Office offers free shuttle service to/from Puerto Plata and Santiago. Other airport options include Santo Domingo (SDQ) which is 3.5 hours away and Punta Cana (PUJ) which is 5.5 hours away. Rental car options are also available."
-  },
-  "visa": {
-    keywords: ["visa", "passport", "requirements", "travel documents"],
-    response: "USA, Canada and Europe generally do not require a Visa. For other countries, check with your country's embassy for specific requirements. We can provide invitation letters for visa applications if needed."
+  "meals": {
+    keywords: ["food", "meals", "dining", "catering", "organic", "dietary", "chef", "meal plan"],
+    response: "Plated group dining (rotating global cuisines, dietary options included): Essentials $80 pp/day (breakfast, lunch, 3-course dinner), Executive $120 pp/day (+ elevated dinner & basic bar), Private Chef $160+ pp/day (bespoke in-villa). Snacks/drinks available separately."
   },
   "team_building": {
-    keywords: ["team building", "activities", "games", "outdoor", "hiking"],
-    response: "Guided hikes, team games, art workshops, and custom team-building exercises. Professional facilitators available to design activities matching your team's goals and dynamics."
+    keywords: ["team building", "activities", "bonding", "GO empower", "survivor", "pool olympics", "donkey polo", "top chef", "games"],
+    response: "Curated experiences included in base price: GO Empower (purposeful volunteering with local youth charity), Survivor Challenge, Pool Olympics, Donkey Polo, and Top Chef Challenge. Customizable for any group size/fitness level—great for lasting bonds! Which sounds most fun for your team?"
   },
-  "work_sessions": {
-    keywords: ["strategy", "brainstorming", "workshops", "facilitation", "work sessions"],
-    response: "Strategy sessions, brainstorming workshops, and structured work sessions. Quiet spaces and meeting rooms support focused work time and collaborative projects."
+  "adventures": {
+    keywords: ["adventures", "excursions", "tours", "whale watching", "canyoning", "surfing", "concierge", "activities", "outdoor"],
+    response: "Our GO Adventures Concierge customizes off-site experiences (10% group discount >10 people): kitesurfing, waterfall canyoning, catamaran sails, whale watching (Jan–Mar), jungle ziplines, and more. Fully arranged for you! Interested in adding adventure?"
   },
   "wellness": {
-    keywords: ["wellness", "yoga", "meditation", "health", "mindfulness"],
-    response: "Yoga sessions, meditation workshops, and wellness programs led by certified instructors. Wellness activities can be integrated into your retreat schedule."
+    keywords: ["spa", "massage", "sauna", "thermal pool", "beach", "pool", "yoga", "relaxation", "wellness"],
+    response: "Included: Hydrotherapy spa sanctuary (thermal pools, sauna), lagoon-style pools, secluded private beach, and beach bar. Massages/treatments available as add-ons. Perfect balance of work and recharge!"
   },
-  "facilitation": {
-    keywords: ["facilitator", "custom", "professional", "guided", "leadership"],
-    response: "Professional facilitators available for leadership development, team dynamics, and custom workshop design. Services tailored to your specific organizational goals."
+  "social_responsibility": {
+    keywords: ["charity", "GO empower", "social responsibility", "CSR", "local", "kids", "volunteering", "retention", "empowering dreams"],
+    response: "We partner with Empowering Dreams to support at-risk youth. Teams volunteer through mentorship and workshops—creating emotional connection, stronger retention, and shared purpose. More than team building: it's purpose building."
   },
-  "partnership": {
-    keywords: ["partnership", "affiliate", "collaboration", "business"],
-    response: "Partnership opportunities include affiliate programs, venue partnerships, and collaborative marketing. Contact admin@greenofficevillas.com for detailed discussions."
+  "booking": {
+    keywords: ["booking", "reserve", "process", "deposit", "payment", "invoice"],
+    response: "20% deposit to reserve, balance due 30 days prior. Transparent USD invoicing."
   },
-  "referral": {
-    keywords: ["referral", "recommend", "program", "benefits", "rewards"],
-    response: "Active referral programs reward successful recommendations. Benefits include commission structures and priority booking for referring partners."
+  "cancellation": {
+    keywords: ["cancellation", "refund", "policy", "cancel", "change dates"],
+    response: "60+ days: 50% deposit refund. 30–60 days: Deposit non-refundable (credit possible). <30 days: Full payment non-refundable."
   },
-  "pets": {
-    keywords: ["pets", "animals", "dogs", "cats", "service animals"],
-    response: "Pet accommodations handled case-by-case basis. Service animals always welcome. Contact us in advance to discuss specific pet requirements and arrangements."
+  "safety": {
+    keywords: ["safety", "security", "insurance", "medical", "health"],
+    response: "24/7 security, gated property, on-call medical support (hospital ~20 mins). Guests should carry travel/medical insurance."
   },
-  "hybrid": {
-    keywords: ["hybrid", "virtual", "remote", "online", "mixed"],
-    response: "Yes, we support hybrid retreats with virtual integration capabilities. High-speed internet and AV equipment enable seamless connection with remote team members."
+  "transportation": {
+    keywords: ["airport", "shuttle", "transfer", "puerto plata", "POP", "STI", "santo domingo", "SDQ", "punta cana", "PUJ", "travel", "getting there", "pickup", "luxury transport"],
+    response: "Puerto Plata (POP): Included group transfer (~20–30 mins). Other airports (STI, SDQ, PUJ): Private luxury upgrade available. We handle everything for smooth arrival!"
   },
-  "covid": {
-    keywords: ["covid", "health", "safety", "vaccination", "masks"],
-    response: "Vaccination encouraged but not required. Masking optional based on current guidelines. We maintain flexible health policies adapted to current recommendations."
+  "visa": {
+    keywords: ["visa", "passport", "requirements", "travel documents", "e-ticket", "entry"],
+    response: "Most visitors (US, Canada, EU) enter visa-free. Complete quick online E-Ticket before arrival/departure: https://eticket.migracion.gob.do"
   },
-  "insurance": {
-    keywords: ["insurance", "liability", "coverage", "protection"],
-    response: "Standard venue liability insurance included. Personal travel insurance recommended for comprehensive coverage of travel-related issues."
+  "faq": {
+    keywords: ["alcohol", "outlets", "laundry", "washer", "minimum stay", "individual booking", "power", "plugs"],
+    response: "Alcohol: Custom bar packages or BYO. Power: Standard US plugs (110V). Laundry: Washer/dryer in each villa + optional service. Minimum stay: 3 nights (low season), 4 nights (high season). Individual bookings: Yes—welcome via Workcation packages! How else can I help you plan your Green Office experience?"
   }
 };
 
